@@ -126,7 +126,7 @@
 							catname=catname.substring(0,12)+"..";
 						}
                         var category_name=HtmlEncode(catList[i].category_name);
-                            var cathtml='<div class="category-item col-3 ml-4 mb-2"  style="-webkit-box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); box-shadow: 0 10px 12px rgba(0, 0, 0, 0.1);border-collapse: separate; border-radius: .7rem!important;" id="'+id+'" onclick="catlistBranchData('+catList[i].category_id+','+category_name+')">'+
+                            var cathtml='<div class="category-item col-3 ml-4 mb-2"  style="-webkit-box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); box-shadow: 0 10px 12px rgba(0, 0, 0, 0.1);border-collapse: separate; border-radius: .7rem!important;" id="'+id+'" onclick="window.location.href = 'category.html';">'+
                                             //'<div class = "ml-0">'+
                                                 '<img src="'+imglogo+'" style="width:150%; height:75%; margin-left:-15px; border-radius: .5rem!important;"  alt="" >'+
                                             //'</div>'+
@@ -185,7 +185,7 @@
 						var nameView='"'+name+'"';
 						
 						$("#mixDiv"+cm).html(mainCategoryIds[key].substring(0,10)+"..");
-						var vieww = "<div class='col text-right section-viewall-title space-mb--20' onclick='catlistBranchData("+main_category_id+","+nameView+")' >" + "View All" + "</div>";
+						var vieww = "<div class='col text-right section-viewall-title space-mb--20' onclick='"window.location.href = 'category.html';" >" + "View All" + "</div>";
 						document.getElementById("mixDiv"+cm+"View").innerHTML = vieww;
 						r++;
 					}
@@ -1615,7 +1615,7 @@
 				if(subcatname.length >13){
 					subcatname=subcatname.substring(0,12)+"..";
 				}
-                  cathtml += "<div class='category-item col-3 ml-4 mb-3' style='-webkit-box-shadow: 0 6x 8px rgba(0, 0, 0, 0.1); box-shadow: 0 10px 12px rgba(0, 0, 0, 0.1);border-collapse: separate; border-radius: 1rem!important;' id='"+id+"' onclick='catlistBranchData("+catList[i].category_id+")'>"+
+                  cathtml += "<div class='category-item col-3 ml-4 mb-3' style='-webkit-box-shadow: 0 6x 8px rgba(0, 0, 0, 0.1); box-shadow: 0 10px 12px rgba(0, 0, 0, 0.1);border-collapse: separate; border-radius: 1rem!important;' id='"+id+"' onclick="window.location.href = 'category.html';">"+
                                 /*"<div class='rounded-lg category-item__image'>"+                                  
                                     "<img src='"+imglogo+"' class='injectable catimg' alt=''>"+
                                 "</div>"+*/
