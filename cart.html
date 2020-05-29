@@ -1,0 +1,507 @@
+
+<!DOCTYPE html>
+<html class="no-js" lang="zxx">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>NearbyGrocery</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon -->
+    <link rel="icon" href="https://m.nearbygrocer.com/assets/img/logo.png">
+    <!-- CSS
+	============================================ -->
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <!-- FontAwesome CSS -->
+    <link rel="stylesheet" href="assets/css/font-awesome.min.css">
+    <!-- Slick CSS -->
+    <link rel="stylesheet" href="assets/css/slick.min.css">
+    <!-- Animate CSS -->
+    <link rel="stylesheet" href="assets/css/cssanimation.min.css">
+    <!-- IonRange slider CSS -->
+    <link rel="stylesheet" href="assets/css/ion.rangeSlider.min.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- Vendor & Plugins CSS (Please remove the comment from below vendor.min.css & plugins.min.css for better website load performance and remove css files from avobe) -->
+    <!--
+		<link rel="stylesheet" href="https://m.nearbygrocer.com/assets/css/vendor.min.css">
+		<link rel="stylesheet" href="https://m.nearbygrocer.com/assets/css/plugins/plugins.min.css">
+		-->
+    <!-- Main Style CSS -->
+    <link rel="stylesheet" href="assets/css/style.css">
+     <!-- jQuery JS -->
+    <script src="assets/js/jquery-3.4.1.min.js"></script>
+    <script>
+       
+        function goBack(){
+            window.location.href="https://m.nearbygrocer.com/";
+        }
+		var cart=[{"cart_id":"cart1590664092451","branch_id":"1","product_list":[{"product_id":"277","varient_id":"","quantity":"1"},{"product_id":"13084","varient_id":"","quantity":"1"},{"product_id":"91","varient_id":"","quantity":"1"},{"product_id":"1799","varient_id":"","quantity":"1"},{"product_id":"1800","varient_id":"","quantity":"1"},{"product_id":"3051","varient_id":"","quantity":"1"},{"product_id":"1682","varient_id":"","quantity":"1"},{"product_id":"3973","varient_id":"","quantity":"1"}]}];
+		var cartProduct =[{"productid":"277","varientid":"","quantity":"1"},{"productid":"13084","varientid":"","quantity":"1"},{"productid":"91","varientid":"","quantity":"1"},{"productid":"1799","varientid":"","quantity":"1"},{"productid":"1800","varientid":"","quantity":"1"},{"productid":"3051","varientid":"","quantity":"1"},{"productid":"1682","varientid":"","quantity":"1"},{"productid":"3973","varientid":"","quantity":"1"}];
+		var product_list=[{"pos_product_mstr_id":"984","product_id":"277","product_name":"ENVY1000 BLISS DEO 120ML","upc_code":"","product_description":"","product_specification":"","keywords":null,"product_variation_id":"ML","product_variation_key":"120","variant_code":"","image":"\/\/nearbygrocer.com\/images\/product_gallery\/buss_1\/277.jpg","status":"1","mrp":"199.00","selling_price":"189.00","quantity":"1.00","product_type":"Simple","variants":[]},{"pos_product_mstr_id":"6449","product_id":"13084","product_name":"CERELAC CEREGROW MULT +%26+ MILK+%26+","upc_code":"","product_description":"","product_specification":"","keywords":null,"product_variation_id":"GM","product_variation_key":"300","variant_code":"","image":"\/\/nearbygrocer.com\/images\/product_gallery\/buss_1\/13084.jpg","status":"1","mrp":"265.00","selling_price":"251.75","quantity":"8.00","product_type":"Simple","variants":[]},{"pos_product_mstr_id":"259","product_id":"91","product_name":"CAD SILK FR+%26+NUT 145GM","upc_code":"","product_description":"","product_specification":"","keywords":null,"product_variation_id":"GM","product_variation_key":"145","variant_code":"","image":"\/\/nearbygrocer.com\/images\/product_gallery\/buss_1\/91.jpg","status":"1","mrp":"160.00","selling_price":"152.00","quantity":"4.00","product_type":"Simple","variants":[],"category_id":"26","sub_category_id":"208"},{"pos_product_mstr_id":"7002","product_id":"1799","product_name":"AMUL CHEESE BLOCK 200GM","upc_code":"","product_description":"","product_specification":"","keywords":null,"product_variation_id":"GM","product_variation_key":"200","variant_code":"","image":"\/\/nearbygrocer.com\/images\/product_gallery\/buss_1\/1799.jpg","status":"1","mrp":"102.00","selling_price":"96.90","quantity":"20.00","product_type":"Simple","variants":[]},{"pos_product_mstr_id":"2531","product_id":"1800","product_name":"AMUL CHEESE SLICE 200G PLS","upc_code":"","product_description":"","product_specification":"","keywords":null,"product_variation_id":"GM","product_variation_key":"200","variant_code":"","image":"\/\/nearbygrocer.com\/images\/product_gallery\/buss_1\/1800.jpg","status":"1","mrp":"118.00","selling_price":"112.10","quantity":"12.00","product_type":"Simple","variants":[]},{"pos_product_mstr_id":"2512","product_id":"3051","product_name":"AMUL CHEESE SPR PLAIN 200 GM","upc_code":"","product_description":"","product_specification":"","keywords":null,"product_variation_id":"GM","product_variation_key":"200","variant_code":"","image":"\/\/nearbygrocer.com\/images\/product_gallery\/buss_1\/3051.jpg","status":"1","mrp":"80.00","selling_price":"76.00","quantity":"18.00","product_type":"Simple","variants":[]},{"pos_product_mstr_id":"7272","product_id":"1682","product_name":"BRIT CHEESE BLOCK 200GM","upc_code":"","product_description":"","product_specification":"","keywords":null,"product_variation_id":"GM","product_variation_key":"200","variant_code":"","image":"\/\/nearbygrocer.com\/images\/product_gallery\/buss_1\/1682.jpg","status":"1","mrp":"140.00","selling_price":"133.00","quantity":"11.00","product_type":"Simple","variants":[]},{"pos_product_mstr_id":"2667","product_id":"3973","product_name":"MOTER DAIRY CHEESE CUBE 180GM","upc_code":"","product_description":"","product_specification":"","keywords":null,"product_variation_id":"GM","product_variation_key":"180","variant_code":"","image":"\/\/nearbygrocer.com\/images\/product_gallery\/buss_1\/3973.jpg","status":"1","mrp":"110.00","selling_price":"104.00","quantity":"9.00","product_type":"Simple","variants":[]}];
+		var cartProduct=cartProduct;
+		var productList=product_list;
+		var len=productList.length;
+		var totalMrp=0.0;
+		var totalSellingPrice=0.0;
+		var index=0;
+		$(function($){
+			
+			
+			if(product_list!=null && Object.keys(product_list).length>0){
+			   
+				
+				for(var i in productList) {
+					var id='productid'+productList[i].product_id;
+					var imglogo=productList[i].image;
+					if(imglogo==null || imglogo==""){
+						imglogo="assets/img/icons/category/nav_beverages.webp";
+					}
+					var qty=0;
+					
+					var productlistCart=cartProduct
+					var mrpPrice="";
+					var sellingPrice="";
+					var proQty="";
+					var proVarient="";
+					var cartVarIDs=[];
+					var cartVarQty=[];
+					
+					
+					
+					if(productList[i].variants.length > 0){
+						for(var v=0;v<productList[i].variants.length;v++){
+							if(productlistCart[index].varientid==productList[i].variants[v].variant_id){
+								mrpPrice=parseFloat(productList[i].variants[v].mrp);
+								sellingPrice=parseFloat(productList[i].variants[v].selling_price);
+								proQty=productList[i].variants[v].quantity;
+								proVarient=productList[i].variants[v].product_variation_key+ " "+productList[i].variants[v].product_variation_id
+								qty=productlistCart[index].quantity;
+								console.log(qty);
+							}
+						}
+						
+					}else{
+						mrpPrice=parseFloat(productList[i].mrp);
+						sellingPrice=parseFloat(productList[i].selling_price);
+						proQty=productList[i].quantity;
+						proVarient="";
+						qty=productlistCart[index].quantity;
+							
+					}
+					index++;
+					
+					
+					var discountClass="";
+					var productDiscount=0;
+					var priceMrpDivclass="main-price";
+					var priceSellingDivclass="discounted-price";
+				
+					if(parseFloat(mrpPrice)!=parseFloat(sellingPrice)){
+						var pirceDiff=parseFloat(mrpPrice)-parseFloat(sellingPrice);
+						var productDiscount=(100*pirceDiff)/parseFloat(mrpPrice);
+						productDiscount=productDiscount.toFixed(0)
+					}else{
+						discountClass="discountClass";
+						priceMrpDivclass="discounted-price";
+						priceSellingDivclass="discountClass discounted-price";
+					}
+					
+					if(qty>0){
+						var rowDiv= "<div class='row grid-product'>"+
+									"<div class='col-4'>"+
+										"<div class='space-mt--10'>"+
+											"<div class='grid-product__image'>"+
+												"<img src='assets/images/1799.jpg' class='proImg img-fluid' alt=''>"+
+												"<label class='productDiscount "+discountClass+" '>"+productDiscount+"% off</label>"+
+											"</div>"+
+										"</div>"+
+									"</div>"+
+									"<div class='col'>"+
+										"<div class='space-mt--10'>"+
+											"<div class='grid-product__content'>"+
+												"<h3 class='title'>"+productList[i].product_name+"</h3>"+
+												"<span class='main-qty'>In Stock Qty: "+proQty+"<label class='main-qty text-right'>"+proVarient+"</label></span>"+
+												
+												"<div class='price'>"+
+													"<span class='"+priceMrpDivclass+"'>Rs."+mrpPrice+"</span>"+
+													"<div class='qty qtyCart pull-right' id='qtyAddminus'>"+
+														"<span  onClick='changeQtyCart(this,0)' class='minus bg-dark qtyMinus'  data-productid='"+productList[i].product_id+"'>-</span>"+
+														"<input type='number' id='qtyCount' class='count qtyCount' name='qty' value='"+qty+"'>"+
+														"<span onClick='changeQtyCart(this,1)' class='plus bg-dark qtyAdd'  data-productid='"+productList[i].product_id+"'>+</span>"+
+													"</div>"+
+													"<br/><span class='"+priceSellingDivclass+"'>Rs."+sellingPrice+"</span>"+
+												"</div>"+
+												
+											"</div>"+
+										"</div>"+
+									"</div>"+
+								"</div><br/>";
+								
+						
+						totalMrp=totalMrp+(parseFloat(mrpPrice)*qty);
+						totalSellingPrice=totalSellingPrice+(parseFloat(sellingPrice)*qty);
+					 
+						$("#productlistslider").append(rowDiv);
+					}
+				}
+				var totalDiscount=totalMrp-totalSellingPrice;
+				$(".cartTitleSub").html(+"Items (&#x20b9;"+totalSellingPrice.toFixed(2)+")");
+				
+				$(".totalAmountFooter").html("&#x20b9;"+totalSellingPrice.toFixed(2)+"<br/>Total Amount");
+				$(".savetitleTextTotalAmt").html("&#x20b9;"+totalSellingPrice.toFixed(2));
+				$(".savetitleTextMrp").html("&#x20b9;"+totalMrp.toFixed(2));
+				$(".savetitleTextDiscount").html("&#x20b9;"+totalDiscount.toFixed(2));
+				$(".savetitle").html("You're saving &#x20b9;"+totalDiscount.toFixed(2));
+
+				var BASE_URL = "https://m.nearbygrocer.com/";
+				$.ajax({
+						type: "POST",
+						data: {"totalMrp":totalMrp,"totalSellingPrice":totalSellingPrice},
+						dataType: 'JSON',
+						url: BASE_URL + "cart/setCartTotalSession",
+						success: function(data){
+						   console.log("");
+						}
+					});
+				
+			}
+
+		
+			
+			
+		});
+        
+        var qty=0;
+        
+        function changeQtyCart(trg,addminus){
+            var prodId=$(trg).data("productid");
+            var BASE_URL = "https://m.nearbygrocer.com/";
+            var quantity=parseInt($(trg).parent().find("#qtyCount").val());
+            if(addminus==0) quantity=quantity-1;
+            else  quantity=quantity+1;
+
+            if(quantity>=0){
+                $.ajax({
+                    type: "POST",
+                    data: {"product_id":prodId,"quantity":quantity},
+                    dataType: 'JSON',
+                    url: BASE_URL + "cart/changeCartQty",
+                    success: function(data){ 
+                        if(data.qty==0){
+                            $(trg).parent().find("#qtyCount").val(1);
+                            $(trg).parent().parent().parent().parent().parent().parent().remove();
+                        }
+                        else if(data.qty!=0){
+                            $(trg).parent().find("#qtyCount").val(data.qty);
+                        }
+						if(data.productCount=="0"){
+							 window.location.href="https://m.nearbygrocer.com/emptypage";
+						}
+						else{
+							$(".cartCount").html(data.productCount);
+										var totalDiscount=parseFloat(data.totalMrp)-parseFloat(data.totalSellingPrice);
+											totalSellingPrice=data.totalSellingPrice;
+										totalMrp=data.totalMrp
+										$(".cartTitleSub").html(data.productCount+"Items (&#x20b9;"+data.totalSellingPrice.toFixed(2)+")");
+										$(".savetitleTextTotalAmt").html("&#x20b9;"+data.totalSellingPrice.toFixed(2));
+										$(".totalAmountFooter").html("&#x20b9;"+data.totalSellingPrice.toFixed(2)+"<br/>Total Amount");
+										$(".savetitleTextMrp").html("&#x20b9;"+data.totalMrp.toFixed(2));
+										$(".savetitleTextDiscount").html("&#x20b9;"+totalDiscount.toFixed(2));
+										$(".savetitle").html("You're saving &#x20b9;"+totalDiscount.toFixed(2));
+						}
+                        
+                    }
+                });
+            }
+            
+        }
+
+
+        function gotoCheckout(){
+            $("#overlay").fadeIn(300);　
+            var customer_id="0";
+            var minimum_order_value=parseInt("111.00");
+            var BASE_URL = "https://m.nearbygrocer.com/";
+            if(totalSellingPrice < minimum_order_value){
+                $('html,body').animate({
+                        scrollTop: $(".minOrderToast").offset().top
+                    }, 'slow');
+                $(".minOrderToast").toast('show');
+                
+                setTimeout(() => {
+                    $(".minOrderToast").toast('hide');
+                }, 4000);
+            }
+            else if(customer_id=="0"){
+                $.ajax({
+                    type: "POST",
+                    data: {"fromCart":"1"},
+                    dataType: 'JSON',
+                    url: BASE_URL + "cart/setFromCart",
+                    success: function(data){
+                        window.location.href="https://m.nearbygrocer.com/login";
+                    }
+                });
+               
+            }else{
+                var product_list;
+                $.ajax({
+                    type: "POST",
+                    dataType: 'JSON',
+                    url: BASE_URL + "cart/getProductlist",
+                    success: function(data){ 
+                        product_list=data;
+                        addTocart(product_list);
+                    }
+                });
+            }
+            $("#overlay").fadeOut(300);　
+        }
+        function addTocart(product_list){
+            $("#overlay").fadeIn(300);　
+            var customer_id="0";
+            var branchid="1";
+            var d = new Date();
+            var num = d.getTime();
+            var data=JSON.stringify([{"cart_id":"cart"+num+customer_id,"branch_id":branchid,"product_list":product_list}]);
+           
+            $.ajax({
+                type: "POST",
+                data: data,
+                dataType: 'JSON',
+                url:"//peril3as3a4.nearbygrocer.com/carttemp",
+                success: function(data){ 
+                    if(data.STATUS=="Success"){
+                        var cartdata=data.DATA;
+                        var cart_id=cartdata.cart_id;
+                        setSessionCartid(cart_id);
+                    }else{
+                        alert("ERROR : Server Error");
+                    }
+                }
+            });
+            $("#overlay").fadeOut(300);　
+        }
+        function setSessionCartid(cart_id){
+            var BASE_URL = "https://m.nearbygrocer.com/";
+            $.ajax({
+                type: "POST",
+                data: {"cart_id":cart_id,"fromCart":"1"},
+                dataType: 'JSON',
+                url: BASE_URL + "cart/setCartId",
+                success: function(data){ 
+                    window.location.href="https://m.nearbygrocer.com/myaddress";
+                }
+            });
+        }
+    </script>
+    
+</head>
+<body>
+    <div id="overlay">
+        <div class="cv-spinner">
+            <span class="spinner"></span>
+        </div>
+    </div>
+    <div class="body-wrapper space-pt--70 space-pb--120">
+        <!--====================  header area ====================-->
+        <header>
+            <div class="header-wrapper border-bottom">
+                <div class="container space-y--15" >
+                    <div class="row align-items-center">
+						<div class="col-2">
+                            <!-- header menu trigger -->
+                            <button onclick="location.href = 'index.html';" class="header-menu-trigger" id="header-menu-trigger">
+                                <img src="https://m.nearbygrocer.com/assets/img/icons/backarrow.png" class="injectable bckicon" alt="">
+                            </button>
+                        </div>
+                        <div class="col-2">
+                            <a href="index.html" class="header-menu-trigger" id="header-menu-trigger">
+                                <span class="fa fa-home" style="font-size: 30px;padding-top: 6px;margin-left: -10px;"></span>
+                            </a>
+                        </div>
+                        <div class="col-6 text-center">
+                            <img src="https://m.nearbygrocer.com/assets/img/icons/ic_cart_dark.png" class="img-fluid imgcartTitle" alt="">
+                            <label class="titlelbl">Shopping  Cart</label>
+                            <p class="cartTitleSub"> Items (&#x20b9;0.00)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+			
+            <!-- search keywords -->
+        </header>
+        <!--====================  End of header area  ====================-->
+        <!--====================  saving panel  ====================-->
+       
+        <div class="shop-products-area">
+            <div class="shop-grid-products-wrapper space-mt--30 space-mb-m--20">
+                <aside class="col-sm-4">
+                    <div class="card cardsave">
+                        <header class="card-header cardsaving">
+                        <a class="row" href="#" data-toggle="collapse" data-target="#collapseSaving" aria-expanded="true">
+                                <span class="col title savetitle">You're saving &#x20b9; 0.00   </span>
+                                <i class="col-1 icon-action fa fa-chevron-down iconPanel" ></i>
+                            </a>
+                        </header>
+                        <div class="collapse show" id="collapseSaving" >
+                            <article class="card-body">
+                                <div class="row">
+                                    <div class="col">
+                                        <label class="col title savetitleText">MRP</label>
+                                    </div>
+                                    <div class="col text-right">
+                                        <label class="col title savetitleTextMrp">&#x20b9; 0.00</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <label class="col title savetitleText">Discount</label>
+                                    </div>
+                                    <div class="col text-right">
+                                        <label class="col title savetitleTextDiscount">&#x20b9; 0.00</label>
+                                    </div>
+                                </div>
+                                <hr/>
+                                <div class="row">
+                                    <div class="col">
+                                        <label class="col title savetitleText">Total amount</label>
+                                    </div>
+                                    <div class="col text-right">
+                                        <label class="col title savetitleTextTotalAmt">&#x20b9; 0.00</label>
+                                    </div>
+                                    <div class="col-12 text-left">
+                                        
+                                        <label class="col title savetitleTextShipp"><img src="https://m.nearbygrocer.com/assets/img/icons/ic_faq_black.png" class="img-fluid imgcartShipp" alt="">Shipping might apply</label>
+                                    </div>
+                                </div>
+                            </article> <!-- card-body.// -->
+                        </div> <!-- collapse .// -->
+                    </div> <!-- card.// -->
+                </aside>
+            </div>
+        </div>
+       
+        <!--==================== end saving panel ====================-->
+        <!--====================  Store details panel  ====================-->
+        <div class="shop-products-area">
+            <div class="shop-grid-products-wrapper space-mt--30 space-mb-m--20">
+                <aside class="col-sm-4">
+                    <div class="card cardsave">
+                        <header class="card-header cardsaving">
+                        <a class="row" href="#" data-toggle="collapse" data-target="#collapseStoredetail" aria-expanded="false">
+                                <span class="col title storeDetailtitle">Buying Detail</span>
+                                <i class="col-1 icon-action fa fa-chevron-down iconPanel" ></i>
+                            </a>
+                        </header>
+                        <div class="collapse " id="collapseStoredetail" >
+                            <article class="card-body">
+                                <div class="row">
+                                    <div class="col">
+                                        <label class="col title savetitleText">Min. Order Value</label>
+                                    </div>
+                                    <div class="col text-right">
+                                        <label class="col title minOrdertitleText">&#x20b9; 111.00</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <label class="col title savetitleText">Free Delivery Above</label>
+                                    </div>
+                                    <div class="col text-right">
+                                        <label class="col title maxOrderTextDiscount">&#x20b9; 1111.00</label>
+                                    </div>
+                                </div>
+                            </article> <!-- card-body.// -->
+                        </div> <!-- collapse .// -->
+                    </div> <!-- card.// -->
+                </aside>
+            </div>
+        </div>
+        <!--==================== end Store details panel ====================-->
+        <!--====================  Store details panel  ====================-->
+        <div class="shop-products-area">
+            <div class="shop-grid-products-wrapper space-mt--30 space-mb-m--20">
+                <aside class="col-sm-4 alsoInclude">
+                    <div class="card cardsave">
+                        <header class="card-header cardsaving alsoInCardHead">
+                        <a class="row" href="#" data-toggle="collapse" data-target="#collapseFeatureProduct" aria-expanded="false">
+                                <span class="col title titlealsoInclude">You should also include</span>
+                                <i class="col-1 icon-action fa fa-chevron-down iconPanel  titlealsoInclude" ></i>
+                            </a>
+                        </header>
+                       
+                    </div> <!-- card.// -->
+                </aside>
+            </div>
+        </div>
+        <!--==================== end Store details panel ====================-->
+        <!--====================  products area ====================-->
+        <div class="shop-products-area">
+            <!-- shop grid products -->
+            <div class="shop-grid-products-wrapper space-mt--30 space-mb-m--20">
+                <div class="container" id="productlistslider">
+                    
+                </div>
+            </div>
+        </div>
+        <!--====================  End of products area  ====================-->
+        <!--====================  Footer area ====================-->
+        
+        <div role="alert" aria-live="assertive" aria-atomic="true" class="toast minOrderToast" data-autohide="false">
+            <div class="toast-header">
+            </div>
+            <div class="toast-body">Order amount must be greater than 111.00</div>
+        </div>
+        <footer>
+            <!-- <div class="footer" style="position: fixed; left: 0; bottom: 0; width: 100%; background-color: #4CAF50; color: #FFF; text-align: center;">
+  <p>POWERED‌ ‌By‌ ‌-‌ ‌NearbyGrocer‌ ‌Technologies‌ ‌Pvt‌ ‌Ltd‌</p>
+</div> -->            <div class="footer-nav-wrapper cartFooter">
+                <div class="card cardfooter">
+                    <div class="card-body footercard">
+                        <div class="row">
+                            <div class="col-6">
+                                <label class="totalAmountFooter text-center">&#x20b9;0.00<br/>Total Amount</label>
+                            </div>
+                            <div class="col-6 pull-right">
+                                <button id='btnCheckout' onClick="gotoCheckout()" type='button' class='pull-right btnCheckout btn btn-success btn-lg'>Checkout</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+        
+        <!--====================  End of Footer area  ====================-->
+        
+    </div>
+
+    
+    <!-- JS
+    ============================================ -->
+    <!-- Modernizer JS -->
+    <script src="assets/js/modernizr-2.8.3.min.js"></script>
+   
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+    <!-- IonRanger JS -->
+    <script src="assets/js/ion.rangeSlider.min.js"></script>
+    <!-- SVG inject JS -->
+    <script src="assets/js/svg-inject.min.js"></script>
+    <!-- Slick slider JS -->
+    <script src="assets/js/plugins/slick.min.js"></script>
+    <!-- Plugins JS (Please remove the comment from below plugins.min.js for better website load performance and remove plugin js files from avobe) -->
+    <!--
+            <script src="https://m.nearbygrocer.com/assets/js/plugins/plugins.min.js"></script>
+        -->
+    <!-- Main JS -->
+    <script src="assets/js/main.js"></script>
+   
+</body>
+
+
+</html>

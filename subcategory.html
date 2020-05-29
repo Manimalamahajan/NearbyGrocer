@@ -1,0 +1,1064 @@
+
+<!DOCTYPE html>
+<html class="no-js" lang="zxx">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>NearbyGrocery</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon -->
+    <link rel="icon" href="https://m.nearbygrocer.com/assets/img/logo.png">
+    <!-- CSS
+	============================================ -->
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <!-- FontAwesome CSS -->
+    <link rel="stylesheet" href="assets/css/font-awesome.min.css">
+    <!-- Slick CSS -->
+    <link rel="stylesheet" href="assets/css/slick.min.css">
+    <!-- Animate CSS -->
+    <link rel="stylesheet" href="assets/css/cssanimation.min.css">
+    <!-- IonRange slider CSS -->
+    <link rel="stylesheet" href="assets/css/ion.rangeSlider.min.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- Vendor & Plugins CSS (Please remove the comment from below vendor.min.css & plugins.min.css for better website load performance and remove css files from avobe) -->
+    <!--
+		<link rel="stylesheet" href="https://m.nearbygrocer.com/assets/css/vendor.min.css">
+		<link rel="stylesheet" href="https://m.nearbygrocer.com/assets/css/plugins/plugins.min.css">
+	-->
+    <!-- Main Style CSS -->
+    <link rel="stylesheet" href="assets/css/style.css">
+     <!-- jQuery JS -->
+    <script src="assets/js/jquery-3.4.1.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-scrollTo/2.1.2/jquery.scrollTo.min.js"></script>
+    <script>
+		var branchid="1";
+		var categoryid="27";
+		var subCategoryid="9";
+        var catList=[];
+		//console.log(subCategoryid);
+		
+		var product_name_by = '';
+		$.ajax({
+		    url: "//peril3as3a4.nearbygrocer.com/storeinfo",
+            type: 'POST',
+            dataType: 'json',
+            data: {store_id:branchid},
+            cache: false,
+            success: function(data){
+				product_name_by = data.DATA.product_name_by;
+				//console.log(product_name_to_display );
+			}
+		});
+		
+		$.ajax({
+		    url: "//fe.nearbygrocer.com/categories",
+            type: 'POST',
+            dataType: 'json',
+            data: {branch_id:branchid},
+            cache: false,
+            success: function(data){
+                if(data.STATUS=="Success"){
+                    catList=data.DATA;
+                    var len=catList.length;
+					var cathtml="";
+                    for(var i=0;i<catList.length;i++){
+                        if( catList[i].category_id !== null  ) {
+    						var selectMenuSlide="catmenulbl";
+    						if(catList[i].category_id==categoryid){
+    							setSubCate(categoryid,0)
+    							selectMenuSlide="selectMenuSlide";
+    						}
+                            cathtml+='<label class="'+selectMenuSlide+'" onClick="setSubCateDefault(this)" data-catid="'+catList[i].category_id+'">'+HtmlEncode(catList[i].category_name)+'</label>';
+                        }
+                    }
+					$("#scrollcatMenu").html("");
+					$("#scrollcatMenu").html(cathtml);
+					$('#scrollcatMenu').scrollTo('.selectMenuSlide');
+					//$('#scrollcatMenu').scrollLeft($('.selectMenuSlide').offset().left);
+                }else{
+                    $("#scrollcatMenu").hide();
+                }
+            }
+        });
+		function setSubCateDefault(trg){
+			var catid=$(trg).data("catid");
+			$(trg).parent().find(".selectMenuSlide").addClass("catmenulbl");
+			$(trg).parent().find(".selectMenuSlide").removeClass("selectMenuSlide");
+			$(trg).addClass("selectMenuSlide");
+			setSubCate(catid,1);
+		}
+		function setSubCate(categoryid,flgclick){
+			if(flgclick==1){
+				subCategoryid="";
+			}
+			
+			$.ajax({
+			    url: "//fe.nearbygrocer.com/subcategories",
+                type: 'POST',
+                dataType: 'json',
+                data: {branch_id:branchid, category_id:categoryid},
+                cache: false,
+				success: function(data){
+					if(data.STATUS=="Success"){
+						var catList=data.DATA;
+						var len=catList.length;
+						var cathtml="";
+						var firstFind=0;
+						for(var i=0;i<catList.length;i++){
+							var selectMenuSlide="catmenulbl";
+							
+							if(catList[i].sub_category_id==subCategoryid){
+								selectMenuSlide="selectMenuSlide";
+								firstFind=1;
+							}
+							cathtml+='<label class="subcatemenuitem '+selectMenuSlide+'" onClick="setSubCateProducts(this)" data-subcatid="'+catList[i].sub_category_id+'">'+HtmlEncode(catList[i].sub_category_name)+'</label>';
+						}
+						$("#scrollsubcatMenu").html("");
+						$("#scrollsubcatMenu").html(cathtml);
+						
+						if(firstFind==0){
+							$( ".subcatemenuitem:first-child" ).addClass("selectMenuSlide");
+							$('#scrollsubcatMenu').scrollTo('.selectMenuSlide');
+							setSubCateProducts($( ".subcatemenuitem:first-child" ))
+						}
+						$('#scrollsubcatMenu').scrollTo('.selectMenuSlide');
+						//$('#scrollsubcatMenu').scrollLeft($('.selectMenuSlide').offset().left);
+					}else{
+						$("#scrollsubcatMenu").hide();
+					}
+					
+				}
+			});
+		}
+		var productListmain=[];
+		var sessionUserCartData=[{"cart_id":"cart1590726688973","branch_id":"1","product_list":[{"product_id":"1799","variant_id":"","quantity":"1"},{"product_id":"1800","variant_id":"","quantity":"1"},{"product_id":"3051","variant_id":"","quantity":"1"},{"product_id":"3973","variant_id":"","quantity":"1"},{"product_id":"1682","variant_id":"","quantity":"1"},{"product_id":"7276","variant_id":"","quantity":"1"},{"product_id":"7979","variant_id":"","quantity":"1"},{"product_id":"8380","variant_id":"","quantity":2},{"product_id":"1359","variant_id":"","quantity":"1"}]}];
+		function setSubCateProducts(trg){
+			var brachid="1";
+            var subCategoryid=$(trg).data("subcatid");
+            var cartCountNum=0;
+            var BASE_URL = "https://m.nearbygrocer.com/";
+            $("#overlay").fadeIn(50);　
+			page_no=0;
+			flg=0;
+			productListfinish=0;
+			productListmain=[];
+			
+			$(trg).parent().find(".selectMenuSlide").addClass("catmenulbl").removeClass("selectMenuSlide");
+			$(trg).parent().find(".selectMenuSlide").removeClass("selectMenuSlide");
+			$(trg).addClass("selectMenuSlide");
+			$(".titlelbl").html($(trg).html());
+			
+            $.ajax({
+                url: "//fe.nearbygrocer.com/subcategoryproducts",
+                type: 'POST',
+                dataType: 'json',
+                data: {branch_id:brachid,sub_category_id:subCategoryid,page_no:page_no,limit:20},
+                cache: false,
+                success: function(data){
+                    if(data.STATUS=="Success"){
+						$("#productlistslider").html("");
+                        var productList=data.DATA;
+						setMain(productList);
+                        var len=productList.length;
+                        $("#total_prod_count").html(len);
+                        var idm='productid'+productList[0].product_id;
+                        for(var i=0;i<len;i++){
+                            var productdata=JSON.stringify(productList[i]);
+                            var id='productid'+productList[i].product_id;
+                            var imglogo=productList[i].image;
+                            if(imglogo==null || imglogo==""){
+                                imglogo="assets/img/logo.png";
+                            }
+                            var hideAdd="";
+                            var showPlusMinus="";
+                            var qtyCart=1;
+							var cart=[{"cart_id":"cart1590726688973","branch_id":"1","product_list":[{"product_id":"1799","variant_id":"","quantity":"1"},{"product_id":"1800","variant_id":"","quantity":"1"},{"product_id":"3051","variant_id":"","quantity":"1"},{"product_id":"3973","variant_id":"","quantity":"1"},{"product_id":"1682","variant_id":"","quantity":"1"},{"product_id":"7276","variant_id":"","quantity":"1"},{"product_id":"7979","variant_id":"","quantity":"1"},{"product_id":"8380","variant_id":"","quantity":2},{"product_id":"1359","variant_id":"","quantity":"1"}]}];
+							if(sessionUserCartData!=null){
+								cart=sessionUserCartData;
+							}
+                           
+                            if(cart!=null){
+                                var crtProducts=cart[0].product_list;
+                                cartCountNum=crtProducts.length;
+                                for(var r=0;r<crtProducts.length;r++){
+                                    if(crtProducts[r].product_id==productList[i].product_id){
+                                        hideAdd="hideAdd";
+                                        showPlusMinus="showPlusMinus";
+                                        qtyCart=crtProducts[r].quantity;
+                                    }
+                                }
+                            }
+							var discountClass="";
+							var productDiscount=0;
+							var priceMrpDivclass="main-price";
+							var priceSellingDivclass="discounted-price";
+							if(parseFloat(productList[i].mrp)!=parseFloat(productList[i].selling_price)){
+								var pirceDiff=parseFloat(productList[i].mrp)-parseFloat(productList[i].selling_price);
+							
+								var productDiscount=(100*pirceDiff)/parseFloat(productList[i].mrp);
+								productDiscount=productDiscount.toFixed(0)
+							}else{
+								discountClass="discountClass";
+								priceMrpDivclass="discounted-price";
+								priceSellingDivclass="discountClass discounted-price";
+							}
+							var varientclass="varientclass";
+							var varientsArry=[];
+							var varientsNamesHtml="";
+							var mrpPrice="";
+							var sellingPrice="";
+							var varient_id="";
+							var proQty="";
+							if(productList[i].variants.length > 0){
+								varientclass="";
+								varient_id=productList[i].variants[0].variant_id;
+								mrpPrice=parseFloat(productList[i].variants[0].mrp);
+								sellingPrice=parseFloat(productList[i].variants[0].selling_price);
+								proQty=productList[i].variants[0].quantity;
+								for(var r=0;r<productList[i].variants.length;r++){
+									varientsArry[r]=productList[i].variants[r];
+									var selected="";
+									if(selectedCartVarient.length > 0){
+										
+										if(selectedCartVarient.indexOf(parseFloat(productList[i].variants[r].variant_id)) > -1){
+											selected="selected";
+											varient_id=productList[i].variants[r].variant_id;
+											mrpPrice=parseFloat(productList[i].variants[r].mrp);
+											sellingPrice=parseFloat(productList[i].variants[r].selling_price);
+											proQty=productList[i].variants[r].quantity;
+										}else{
+											selected="";
+										}
+									}
+									varientsNamesHtml+="<option "+selected+" data-mrp="+productList[i].variants[r].mrp+" data-sellingprice="+productList[i].variants[r].selling_price+" value="+productList[i].variants[r].variant_id+">"+productList[i].variants[r].product_variation_key+ " "+productList[i].variants[r].product_variation_id+"</option>";
+								}
+							}else{
+								mrpPrice=parseFloat(productList[i].mrp);
+								sellingPrice=parseFloat(productList[i].selling_price);
+								proQty=productList[i].quantity;
+								varient_id="";
+							}
+							
+							var productName = HtmlEncode(productList[i].product_name);
+        					if(product_name_by == "description") {
+        					    productName = HtmlEncode(productList[i].product_description);
+        					}
+        					else if(product_name_by == "specification") {
+        						productName = HtmlEncode(productList[i].product_specification);
+        					}
+        					else {
+        						//product_name=productList[i].product_name.substring(0,15)+"..";
+        						productName = HtmlEncode(productList[i].product_name);
+        					}
+        					if(productName.length > 100) {
+        					    productName=productName.substring(0,100)+"...";
+        					}
+                            var rowDiv= "<div class='row grid-product'>"+
+                                            "<div class='col-4'>"+
+                                                "<div class='space-mt--10'>"+
+                                                    "<div class='grid-product__image'>"+
+                                                        "<img src='assets/images/1799.jpg' class='proImg img-fluid' alt=''>"+
+														"<label class='productDiscount "+discountClass+" '>"+productDiscount+"% off</label>"+
+                                                    "</div>"+
+                                                "</div>"+
+                                            "</div>"+
+                                            "<div class='col'>"+
+                                                "<div class='space-mt--10'>"+
+                                                    "<div class='grid-product__content'>"+
+                                                        "<h3 class='title'>"+productName+"</h3>"+
+														//"<span class='main-qty'>In Stock Qty: "+productList[i].quantity+"</span>"+
+                                                        "<div class='price'>"+
+                                                            "<span class='"+priceMrpDivclass+"'>&#x20b9;"+parseFloat(productList[i].mrp)+"</span>"+
+                                                            "<div class='qty pull-right "+showPlusMinus+"' id='qtyAddminus'>"+
+                                                                "<span  onClick='minusCartQty(this)' class='minus bg-dark qtyMinus'  data-productid='"+productList[i].product_id+"'>-</span>"+
+                                                                "<input type='number' id='qtyCount' class='count qtyCount' name='qty' value='"+qtyCart+"'>"+
+                                                                "<span onClick='addQtyCart(this)' class='plus bg-dark qtyAdd'  data-productid='"+productList[i].product_id+"'>+</span>"+
+                                                            "</div>"+
+                                                            "<button id='btnMainadd'  data-varientid='"+varient_id+"' data-prodctdetails='"+JSON.stringify(productList[i])+" 'onClick='addBtnCart(this)' data-productid='"+productList[i].product_id+"'  type='button' class=' "+hideAdd+" pull-right btnMainadd btn btn-success btn-sm w-50'>ADD</button>"+
+                                                            "<br/><span class='"+priceSellingDivclass+"'>&#x20b9;"+parseFloat(productList[i].selling_price)+"</span>"+
+                                                        "</div>"+
+                                                    "</div>"+
+                                                "</div>"+
+                                            "</div>"+
+                                        "</div><br/>";
+                            $("#productlistslider").append(rowDiv);
+							
+                        }
+                        $(".cartCount").html(cartCountNum);
+                        $(".cartCount").data("cartcount",cartCountNum);
+                    }else{
+						$("#productlistslider").html("");
+                         var rowDiv="<div class='category-item col-12' >"+
+                                                "<div class='rounded-lg '>"+
+                                                    "<label class='notlabel'>No more data found</label>"+
+                                                "</div>"+
+                            $("#productlistslider").append(rowDiv);
+                           	
+                    }
+                    
+                }
+            }).done(function() {
+    			setTimeout(function(){
+    				$("#overlay").fadeOut(50);
+    			},100);
+    		});
+		}
+		
+        $(function($){
+			
+            var page_no=0;
+            var flg=0;
+            var productListfinish=0;
+            $(window).on('touchmove',function(event){
+				
+			  if($(event.target).attr("class")!="catmenulbl"){
+				if ($(window).height() > 10) 
+				{ 
+                    if(flg==0 && productListfinish==0){
+                        flg=1;
+                        page_no=page_no+1;
+                   
+                        var brachid="1";
+                        var subCategoryid="9";
+                        
+                        var BASE_URL = "https://m.nearbygrocer.com/";
+                        $("#overlayfooter").fadeIn(300);　
+                        $.ajax({
+                            url: "//fe.nearbygrocer.com/subcategoryproducts",
+                            type: 'POST',
+                            dataType: 'json',
+                            data: {branch_id:brachid,sub_category_id:subCategoryid,page_no:page_no,limit:20},
+                            cache: false,
+                            success: function(data){
+                                if(data.STATUS=="Success"){
+                                    var productList=data.DATA;
+									setMain(productList);
+                                    var len=productList.length;
+                                    $("#total_prod_count").html(len);
+                                    var idm='productid'+productList[0].product_id;
+                                
+                                    for(var i=0;i<len;i++){
+                                        var productdata=JSON.stringify(productList[i]);
+                                        var id='productid'+productList[i].product_id;
+                                        var imglogo=productList[i].image;
+                                        if(imglogo==null || imglogo==""){
+                                            imglogo="assets/img/logo.png";
+                                        }
+
+                                        var hideAdd="";
+                                        var showPlusMinus="";
+                                        var qtyCart=1;
+                                        var cart=[{"cart_id":"cart1590726688973","branch_id":"1","product_list":[{"product_id":"1799","variant_id":"","quantity":"1"},{"product_id":"1800","variant_id":"","quantity":"1"},{"product_id":"3051","variant_id":"","quantity":"1"},{"product_id":"3973","variant_id":"","quantity":"1"},{"product_id":"1682","variant_id":"","quantity":"1"},{"product_id":"7276","variant_id":"","quantity":"1"},{"product_id":"7979","variant_id":"","quantity":"1"},{"product_id":"8380","variant_id":"","quantity":2},{"product_id":"1359","variant_id":"","quantity":"1"}]}];
+                                        if(cart!=null){
+                                            var crtProducts=cart[0].product_list;
+                                            cartCountNum=crtProducts.length;
+                                            for(var r=0;r<crtProducts.length;r++){
+                                                if(crtProducts[r].product_id==productList[i].product_id){
+                                                    hideAdd="hideAdd";
+                                                    showPlusMinus="showPlusMinus";
+                                                    qtyCart=crtProducts[r].quantity;
+                                                }
+                                            }
+                                        }
+										var discountClass="";
+										var productDiscount=0;
+										var priceMrpDivclass="main-price";
+										var priceSellingDivclass="discounted-price";
+										if(parseFloat(productList[i].mrp)!=parseFloat(productList[i].selling_price)){
+											var pirceDiff=parseFloat(productList[i].mrp)-parseFloat(productList[i].selling_price);
+										
+											var productDiscount=(100*pirceDiff)/parseFloat(productList[i].mrp);
+											productDiscount=productDiscount.toFixed(0)
+										}else{
+											discountClass="discountClass";
+											priceMrpDivclass="discounted-price";
+											priceSellingDivclass="discountClass discounted-price";
+										}
+										
+										var varientclass="varientclass";
+										var varientsArry=[];
+										var varientsNamesHtml="";
+										var mrpPrice="";
+										var sellingPrice="";
+										var varient_id="";
+										var proQty="";
+										if(productList[i].variants.length > 0){
+											varientclass="";
+											varient_id=productList[i].variants[0].variant_id;
+											mrpPrice=parseFloat(productList[i].variants[0].mrp);
+											sellingPrice=parseFloat(productList[i].variants[0].selling_price);
+											proQty=productList[i].variants[0].quantity;
+											for(var r=0;r<productList[i].variants.length;r++){
+												varientsArry[r]=productList[i].variants[r];
+												var selected="";
+												if(selectedCartVarient.length > 0){
+													
+													if(selectedCartVarient.indexOf(parseFloat(productList[i].variants[r].variant_id)) > -1){
+														selected="selected";
+														varient_id=productList[i].variants[r].variant_id;
+														mrpPrice=parseFloat(productList[i].variants[r].mrp);
+														sellingPrice=parseFloat(productList[i].variants[r].selling_price);
+														proQty=productList[i].variants[r].quantity;
+													}else{
+														selected="";
+													}
+												}
+												varientsNamesHtml+="<option "+selected+" data-mrp="+productList[i].variants[r].mrp+" data-sellingprice="+productList[i].variants[r].selling_price+" value="+productList[i].variants[r].variant_id+">"+productList[i].variants[r].product_variation_key+ " "+productList[i].variants[r].product_variation_id+"</option>";
+											}
+										}else{
+											mrpPrice=parseFloat(productList[i].mrp);
+											sellingPrice=parseFloat(productList[i].selling_price);
+											proQty=productList[i].quantity;
+											varient_id="";
+										}
+										
+										var productName = HtmlEncode(productList[i].product_name);
+                    					if(product_name_by == "description") {
+                    					    productName = HtmlEncode(productList[i].product_description);
+                    					}
+                    					else if(product_name_by == "specification") {
+                    						productName = HtmlEncode(productList[i].product_specification);
+                    					}
+                    					else {
+                    						//product_name=productList[i].product_name.substring(0,15)+"..";
+                    						productName = HtmlEncode(productList[i].product_name);
+                    					}
+                    					if(productName.length > 100) {
+                    					    productName=productName.substring(0,100)+"...";
+                    					}
+                    					
+                                        var rowDiv= "<div class='row grid-product'>"+
+                                                        "<div class='col-4'>"+
+                                                            "<div class='space-mt--10'>"+
+                                                                "<div class='grid-product__image'>"+
+                                                                    "<img src='"+imglogo+"' class='proImg img-fluid' alt=''>"+
+																	"<label class='productDiscount "+discountClass+"'>"+productDiscount+"% off</label>"+
+                                                                "</div>"+
+                                                            "</div>"+
+                                                        "</div>"+
+                                                        "<div class='col'>"+
+                                                            "<div class='space-mt--10'>"+
+                                                                "<div class='grid-product__content'>"+
+                                                                    "<h3 class='title'>"+productName+"</h3>"+
+																	//"<span class='main-qty'>In Stock Qty: "+productList[i].quantity+"</span>"+
+                                                                    "<div class='price'>"+
+                                                                        "<span class='"+priceMrpDivclass+"'>&#x20b9;"+parseFloat(productList[i].mrp)+"</span>"+
+                                                                        "<div class='qty pull-right "+showPlusMinus+"' id='qtyAddminus'>"+
+                                                                            "<span  onClick='minusCartQty(this)' class='minus bg-dark qtyMinus'  data-productid='"+productList[i].product_id+"'>-</span>"+
+                                                                            "<input type='number' id='qtyCount' class='count qtyCount' name='qty' value='"+qtyCart+"'>"+
+                                                                            "<span onClick='addQtyCart(this)' class='plus bg-dark qtyAdd'  data-productid='"+productList[i].product_id+"'>+</span>"+
+                                                                        "</div>"+
+                                                                        "<button id='btnMainadd' data-varientid='"+varient_id+"' data-prodctdetails='"+JSON.stringify(productList[i])+" 'onClick='addBtnCart(this)' data-productid='"+productList[i].product_id+"'  type='button' class=' "+hideAdd+" pull-right btnMainadd btn btn-success btn-sm w-50'>ADD</button>"+
+                                                                        "<br/><span class='"+priceSellingDivclass+"'>&#x20b9;"+parseFloat(productList[i].selling_price)+"</span>"+
+                                                                    "</div>"+
+                                                                "</div>"+
+                                                            "</div>"+
+                                                        "</div>"+
+                                                    "</div><br/>";
+                                        $("#productlistslider").append(rowDiv);
+                                    }
+                                }else{
+                                    var rowDiv="<div class='category-item col-12' >"+
+                                                "<div class='rounded-lg '>"+
+                                                    "<label class='notlabel'>No more data found</label>"+
+                                                "</div>"+
+                                        "</div>";
+                                    $("#productlistslider").append(rowDiv);
+                                    productListfinish=1;    
+                                }
+                                
+                            }
+                        }).done(function() {
+                            setTimeout(function(){
+                                $("#overlayfooter").fadeOut(50);
+                                if(productListfinish==1)
+                                    flg=1;
+                                else
+                                    flg=0;
+                            },100);
+                        });
+                    }
+                    
+                }
+			  }
+              
+            });
+			
+    		var brachid="1";
+            var subCategoryid="9";
+            var cartCountNum=0;
+            var BASE_URL = "https://m.nearbygrocer.com/";
+            $("#overlay").fadeIn(50);　
+			
+            $.ajax({
+                url: "//fe.nearbygrocer.com/subcategoryproducts",
+                type: 'POST',
+                dataType: 'json',
+                data: {branch_id:brachid,sub_category_id:subCategoryid,page_no:page_no,limit:20},
+                cache: false,
+                success: function(data){
+                    if(data.STATUS=="Success"){
+                        var productList=data.DATA;
+						setMain(productList);
+                        var len=productList.length;
+                        $("#total_prod_count").html(len);
+                        var idm='productid'+productList[0].product_id;
+                        for(var i=0;i<len;i++){
+                            var productdata=JSON.stringify(productList[i]);
+                            var id='productid'+productList[i].product_id;
+                            var imglogo=productList[i].image;
+                            if(imglogo==null || imglogo==""){
+                                imglogo="assets/img/logo.png";
+                            }
+                            var hideAdd="";
+                            var showPlusMinus="";
+                            var qtyCart=1;
+                            var cart=[{"cart_id":"cart1590726688973","branch_id":"1","product_list":[{"product_id":"1799","variant_id":"","quantity":"1"},{"product_id":"1800","variant_id":"","quantity":"1"},{"product_id":"3051","variant_id":"","quantity":"1"},{"product_id":"3973","variant_id":"","quantity":"1"},{"product_id":"1682","variant_id":"","quantity":"1"},{"product_id":"7276","variant_id":"","quantity":"1"},{"product_id":"7979","variant_id":"","quantity":"1"},{"product_id":"8380","variant_id":"","quantity":2},{"product_id":"1359","variant_id":"","quantity":"1"}]}];
+							var selectedCartVarient=[];
+                            if(cart!=null){
+                                var crtProducts=cart[0].product_list;
+                                cartCountNum=crtProducts.length;
+                               
+                                for(var r=0;r<crtProducts.length;r++){
+                                    if(crtProducts[r].product_id==productList[i].product_id){
+                                        hideAdd="hideAdd";
+                                        showPlusMinus="showPlusMinus";
+                                        qtyCart=crtProducts[r].quantity;
+										if(crtProducts[r].varient_id!=""){
+											selectedCartVarient.push(parseFloat(crtProducts[r].varient_id));
+										}
+                                    }
+                                }
+                            }
+							
+							var varientclass="varientclass";
+							var varientsArry=[];
+							var varientsNamesHtml="";
+							var mrpPrice="";
+							var sellingPrice="";
+							var varient_id="";
+							var proQty="";
+							if(productList[i].variants.length > 0){
+								varientclass="";
+								varient_id=productList[i].variants[0].variant_id;
+								mrpPrice=parseFloat(productList[i].variants[0].mrp);
+								sellingPrice=parseFloat(productList[i].variants[0].selling_price);
+								proQty=productList[i].variants[0].quantity;
+								for(var r=0;r<productList[i].variants.length;r++){
+									varientsArry[r]=productList[i].variants[r];
+									var selected="";
+									if(selectedCartVarient.length > 0){
+										
+										if(selectedCartVarient.indexOf(parseFloat(productList[i].variants[r].variant_id)) > -1){
+											selected="selected";
+											varient_id=productList[i].variants[r].variant_id;
+											mrpPrice=parseFloat(productList[i].variants[r].mrp);
+											sellingPrice=parseFloat(productList[i].variants[r].selling_price);
+											proQty=productList[i].variants[r].quantity;
+										}else{
+											selected="";
+										}
+									}
+									varientsNamesHtml+="<option "+selected+" data-mrp="+productList[i].variants[r].mrp+" data-sellingprice="+productList[i].variants[r].selling_price+" value="+productList[i].variants[r].variant_id+">"+productList[i].variants[r].product_variation_key+ " "+productList[i].variants[r].product_variation_id+"</option>";
+								}
+							}else{
+								mrpPrice=parseFloat(productList[i].mrp);
+								sellingPrice=parseFloat(productList[i].selling_price);
+								proQty=productList[i].quantity;
+								varient_id="";
+							}
+
+							
+							var discountClass="";
+							var productDiscount=0;
+							var priceMrpDivclass="main-price";
+							var priceSellingDivclass="discounted-price";
+						
+							if(parseFloat(mrpPrice)!=parseFloat(sellingPrice)){
+								var pirceDiff=parseFloat(mrpPrice)-parseFloat(sellingPrice);
+							
+								var productDiscount=(100*pirceDiff)/parseFloat(mrpPrice);
+								productDiscount=productDiscount.toFixed(0)
+							}else{
+								discountClass="discountClass";
+								priceMrpDivclass="discounted-price";
+								priceSellingDivclass="discountClass discounted-price";
+							}
+							
+							var productName = HtmlEncode(productList[i].product_name);
+        					if(product_name_by == "description") {
+        					    productName = HtmlEncode(productList[i].product_description);
+        					}
+        					else if(product_name_by == "specification") {
+        						productName = HtmlEncode(productList[i].product_specification);
+        					}
+        					else {
+        						//product_name=productList[i].product_name.substring(0,15)+"..";
+        						productName = HtmlEncode(productList[i].product_name);
+        					}
+        					if(productName.length > 100) {
+        					    productName=productName.substring(0,100)+"...";
+        					}
+								
+							var rowDiv= "<div class='row grid-product'>"+
+										"<div class='col-4'>"+
+											"<div class='space-mt--10'>"+
+												"<div class='grid-product__image'>"+
+													"<img src='"+imglogo+"' class='proImg img-fluid' alt=''>"+
+													"<label class='productDiscount "+discountClass+" '>"+productDiscount+"% off</label>"+
+												"</div>"+
+											"</div>"+
+										"</div>"+
+										"<div class='col'>"+
+											"<div class='space-mt--10'>"+
+												"<div class='grid-product__content'>"+
+													"<h3 class='title'>"+productName+"</h3>"+
+													//"<span class='main-qty'>In Stock Qty: "+proQty+"</span>"+
+													"<select  onchange='changevarient(this)' class='form-control form-control-varient "+varientclass+"' id='exampleFormControlSelect1'>"+varientsNamesHtml+"</select>"+
+													"<div class='price'>"+
+														"<span class='"+priceMrpDivclass+" priceMrpDivclass'>&#x20b9;"+mrpPrice+"</span>"+
+														"<div class='qty pull-right "+showPlusMinus+"' id='qtyAddminus'>"+
+															"<span  onClick='minusCartQty(this)' class='minus bg-dark qtyMinus'  data-productid='"+productList[i].product_id+"'>-</span>"+
+															"<input type='number' id='qtyCount' class='count qtyCount' name='qty' value='"+qtyCart+"'>"+
+															"<span onClick='addQtyCart(this)' class='plus bg-dark qtyAdd'  data-productid='"+productList[i].product_id+"'>+</span>"+
+														"</div>"+
+														"<button id='btnMainadd' data-varientid='"+varient_id+"' data-prodctdetails='"+JSON.stringify(productList[i])+" 'onClick='addBtnCart(this)' data-productid='"+productList[i].product_id+"'  type='button' class=' "+hideAdd+" pull-right btnMainadd btn btn-success btn-sm w-50'>ADD</button>"+
+														"<br/><span class='"+priceSellingDivclass+" priceSellingDivclass'>&#x20b9;"+sellingPrice+"</span>"+
+													"</div>"+
+												"</div>"+
+											"</div>"+
+										"</div>"+
+									"</div><br/>";
+                            $("#productlistslider").append(rowDiv);
+                        }
+                        $(".cartCount").html(cartCountNum);
+                        $(".cartCount").data("cartcount",cartCountNum);
+                    }else{
+                         var rowDiv="<div class='category-item col-12' >"+
+                                                "<div class='rounded-lg '>"+
+                                                    "<label class='notlabel'>No more data found</label>"+
+                                                "</div>"+
+                            $("#productlistslider").append(rowDiv);
+                           	
+                    }
+                    
+                }
+            }).done(function() {
+    			setTimeout(function(){
+    				$("#overlay").fadeOut(50);
+    			},100);
+    		});
+        
+        });
+		
+		
+		function changevarient(trg){
+			
+			
+			var varientSelId=$(trg).val();
+			var mrp=$(trg).find(':selected').data("mrp");
+			var selling_price=$(trg).find(':selected').data("sellingprice");
+			varient_id=$(trg).val();
+			
+			var product_id=$(trg).parent().find(".price").find("#btnMainadd").data("productid");
+			$(trg).parent().find(".price").find("#btnMainadd").removeData('varientid')
+			$(trg).parent().find(".price").find("#btnMainadd").attr("data-varientid",varient_id);
+			
+			$(trg).parent().find(".priceMrpDivclass").html("&#x20b9;"+mrp);
+			$(trg).parent().find(".priceSellingDivclass").html("&#x20b9;"+selling_price);
+			
+			var qtyCart=1;
+			var cart=sessionUserCartData
+			
+			if(cart!=null){
+				var foundQty=0;
+				var crtProducts=cart[0].product_list;
+				for(var r=0;r<crtProducts.length;r++){
+					if(crtProducts[r].product_id==product_id){
+						qtyCart=crtProducts[r].quantity;
+						if(crtProducts[r].varient_id==varientSelId){
+							
+							$(trg).parent().find("#qtyCount").val(qtyCart);
+							$(trg).parent().find("#qtyAddminus").fadeIn();
+							$(trg).parent().find("#qtyAddminus").addClass("showPlusMinus");
+							$(trg).parent().find(".price").find("#btnMainadd").fadeOut();
+							$(trg).parent().find(".price").find("#btnMainadd").addClass("hideAdd");
+							foundQty=1;
+						}
+						
+					}
+				}
+				if(foundQty==0){
+					qty=1;
+					$(trg).parent().find("#qtyCount").val(qty);
+					
+					$(trg).parent().find("#qtyAddminus").fadeOut();
+					$(trg).parent().find("#qtyAddminus").removeClass("showPlusMinus");
+					
+					$(trg).parent().find(".price").find("#btnMainadd").fadeIn();
+					$(trg).parent().find(".price").find("#btnMainadd").removeClass("hideAdd");
+				}
+			}else{
+				qty=1;
+				$(trg).parent().find("#qtyCount").val(qty);
+				
+				$(trg).parent().find("#qtyAddminus").fadeOut();
+				$(trg).parent().find("#qtyAddminus").removeClass("showPlusMinus");
+				
+				$(trg).parent().find(".price").find("#btnMainadd").fadeIn();
+				$(trg).parent().find(".price").find("#btnMainadd").removeClass("hideAdd");
+			}
+			
+			
+			var discountClass="";
+			var productDiscount=0;
+			var priceSellingDivclass="discounted-price";
+			if(parseFloat(mrp)!=parseFloat(selling_price)){
+				var pirceDiff=parseFloat(mrp)-parseFloat(selling_price);
+				var productDiscount=(100*pirceDiff)/parseFloat(mrp);
+				productDiscount=productDiscount.toFixed(0)
+				$(trg).parent().parent().parent().parent().find(".productDiscount").html(productDiscount+"% off")
+				
+			}else{
+				$(trg).parent().parent().parent().parent().find(".productDiscount").addClass("discountClass");
+				$(trg).parent().find(".priceMrpDivclass").addClass("discounted-price");
+				$(trg).parent().find(".priceSellingDivclass").addClass("discountClass discounted-price");
+			}
+		}
+        
+		
+		
+		function setMain(productList){
+			if(productListmain!=null){
+				if(productListmain.length > 0){
+					productListmain=productListmain.concat(productList);
+					
+				}else{
+					productListmain=productList;
+				}
+			}else{
+				productListmain=productList;
+			}
+			
+		}
+        var qty=0;
+        function addBtnCart(trg){
+            qty=1;
+			var varient_id=$(trg).data("varientid");
+			var prodId=$(trg).data("productid");
+            var productData=$(trg).data("prodctdetails");
+            $(trg).parent().find("#qtyAddminus").fadeIn();
+            $(trg).parent().find("#btnMainadd").fadeOut();
+            addTocart(prodId,1,productData,varient_id);
+        };
+        function addTocart(prodId,quantity,productData,varient_id){
+            var cart=[{"cart_id":"cart1590726688973","branch_id":"1","product_list":[{"product_id":"1799","variant_id":"","quantity":"1"},{"product_id":"1800","variant_id":"","quantity":"1"},{"product_id":"3051","variant_id":"","quantity":"1"},{"product_id":"3973","variant_id":"","quantity":"1"},{"product_id":"1682","variant_id":"","quantity":"1"},{"product_id":"7276","variant_id":"","quantity":"1"},{"product_id":"7979","variant_id":"","quantity":"1"},{"product_id":"8380","variant_id":"","quantity":2},{"product_id":"1359","variant_id":"","quantity":"1"}]}];
+            var BASE_URL = "https://m.nearbygrocer.com/";
+            var obj_productData = JSON.parse(productData);
+           
+            var cartData;
+            if(cart!=null && cart.length >0){
+                cartData=[{
+                    "product_list":[{"product_id":prodId,"variant_id":varient_id,"quantity":quantity}]
+                }]
+            }
+            else{
+                var d = new Date();
+                var num = d.getTime();
+                cartData=[{
+                    "cart_id":"cart"+num,
+                    "branch_id":"1",
+                    "product_list":[{"product_id":prodId,"variant_id":varient_id,"quantity":quantity}]
+                }]
+            }
+            $.ajax({
+                    dataType: 'JSON',
+                    type: "POST",
+                    data: {"cartData":cartData},
+                    url: BASE_URL + "Subcategory/setCartSettion",
+                    success: function(data){ 
+                        sessionUserCartData=data.cart;
+                        $(".cartCount").html(data.productCount);
+						$(".cartCount").data("cartcount",data.productCount);
+                    }
+            });
+           
+            $.ajax({
+                    dataType: 'JSON',
+                    type: "POST",
+                    data: {"productData":productData},
+                    url: BASE_URL + "Subcategory/setCartProducts",
+                    success: function(data){ 
+                        
+                        $(".cartCount").html(data.productCount);
+						 $(".cartCount").data("cartcount",data.productCount);
+                    }
+            });
+        }
+        function addQtyCart(trg){
+			var prodId=$(trg).data("productid");
+			var addQtyflg=0;
+			var maxQty=0;
+			$(trg).removeAttr( "onClick" )
+			if(productListmain!=null){
+				for(var i=0;i<productListmain.length;i++){
+					
+					if(productListmain[i].product_id==prodId){
+						console.log(parseInt(productListmain[i].quantity)+"=="+qty)
+						if(parseInt(productListmain[i].quantity)<=parseInt($(trg).parent().find("#qtyCount").val())){
+							addQtyflg=1;
+							maxQty=parseInt(productListmain[i].quantity);
+						}
+					}
+				}
+			}
+            if(addQtyflg==0){
+				var BASE_URL = "https://m.nearbygrocer.com/";
+           
+				$.ajax({
+					type: "POST",
+					data: {"product_id":prodId},
+					dataType: 'JSON',
+					url: BASE_URL + "Subcategory/addCartQty",
+					success: function(data){ 
+						qty=data.qty;
+						$(trg).parent().find("#qtyCount").val(data.qty);
+						$(".cartCount").html(data.productCount);
+						 $(".cartCount").data("cartcount",data.productCount);
+						$(trg).attr("onClick","addQtyCart(this)");
+					}
+				});
+			}else{
+				alert("Maximum quantity for this product is "+maxQty);
+				$(trg).attr("onClick","addQtyCart(this)");
+			}
+            
+        }
+        function minusCartQty(trg){
+            var prodId=$(trg).data("productid");
+            var varient_id=$(trg).parent().parent().find("#btnMainadd").data("varientid");
+            var BASE_URL = "https://m.nearbygrocer.com/";
+           
+            $.ajax({
+                type: "POST",
+                dataType: 'JSON',
+                data: {"product_id":prodId,"varient_id":varient_id},
+                url: BASE_URL + "Subcategory/minusCartQty",
+                success: function(data){
+                   
+                    if(data.qty==0){
+                        $(trg).parent().parent().find("#qtyAddminus").fadeOut();
+                        $(trg).parent().parent().find("#btnMainadd").fadeIn();
+                        $(trg).parent().find("#qtyCount").val(1);
+                        $(".cartCount").html(data.productCount);
+						 $(".cartCount").data("cartcount",data.productCount);
+                    }else{
+                        $(trg).parent().find("#qtyCount").val(data.qty);
+                        $(".cartCount").html(data.productCount);
+						 $(".cartCount").data("cartcount",data.productCount);
+                    }
+                }
+            });
+        }
+        
+       
+    </script>
+</head>
+<body>
+    <!--====================  preloader area ====================-->
+    <!-- <div id="overlay"> -->
+    	<!-- <div class="cv-spinner"> -->
+    		<!-- <span class="spinner"></span> -->
+    	<!-- </div> -->
+    <!-- </div> -->
+    <!--====================  End of preloader area  ====================-->
+    <div class="body-wrapper space-pt--70 space-pb--120">
+        <!--====================  header area ====================-->
+        <header>
+            <div class="header-wrapper border-bottom">
+                <div class="container space-y--15" >
+                    <div class="row align-items-center">
+						<div class="col-2">
+                            <!-- header menu trigger -->
+                            <button  onclick="location.href = 'index.html';" class="header-menu-trigger" id="header-menu-trigger">
+                                <img src="https://m.nearbygrocer.com/assets/img/icons/backarrow.png" class="injectable bckicon" alt="">
+                            </button>
+                        </div>
+                        <div class="col-2">
+                            <a href="index.html" class="header-menu-trigger" id="header-menu-trigger">
+                                <span class="fa fa-home" style="font-size: 30px;padding-top: 6px;margin-left: -10px;"></span>
+                            </a>
+                        </div>
+                        <div class="col">
+                            <label class="titlelbl">CHEESE</label>
+                        </div>
+						<div class="col-1 ">
+                           <div class="header-logo"  onclick="gotoSeach()">
+                                <i class=" fa fa-search headeSearchicn searchicon" aria-hidden="true"></i>
+			
+                            </div>
+                            
+                        </div>
+						<!-- <div class="header-logo float-right" onclick="return gotoCartPage();"> -->
+                                <!-- <img src="https://m.nearbygrocer.com/assets/img/icons/ic_cart_dark.png" class="img-fluid" alt=""> -->
+                                <!-- <label class="cartCount" data-cartcount="0">17</label> -->
+                            <!-- </div> -->
+						<div class="col-2 ">
+                            <!-- header logo -->
+                            <div class="header-logo float-right" onclick="location.href = 'cart.html';">
+                                <img src="https://m.nearbygrocer.com/assets/img/icons/ic_cart_dark.png" class="img-fluid" alt="">
+                                <label class="cartCount" data-cartcount="0">10</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+			
+            <!-- search keywords -->
+			<div class="category-slider-area" style="margin-top: 12px;">
+    			<div class="row" style="padding: 0;margin: 0;">
+    				<div class="col-12" style="padding: 0;margin: 0;">
+    					<div class="sub-cat-slides-menu scrollmenu" id="scrollcatMenu"><label class="catmenulbl" onclick="setSubCateDefault(this)" data-catid="20">'BABY FOOD/ HEALTH DRINKS'</label><label class="catmenulbl" onclick="setSubCateDefault(this)" data-catid="24">'BAKERY PRODUCTS / BISCUITS'</label><label class="catmenulbl" onclick="setSubCateDefault(this)" data-catid="34">'BATH SOAP'</label><label class="catmenulbl" onclick="setSubCateDefault(this)" data-catid="41">'CLEANING MATERIAL'</label><label class="catmenulbl" onclick="setSubCateDefault(this)" data-catid="28">'COLD / FRUIT DRINKS'</label><label class="catmenulbl" onclick="setSubCateDefault(this)" data-catid="26">'CONFECTIONERY / CHOCOLATES'</label><label class="catmenulbl" onclick="setSubCateDefault(this)" data-catid="36">'COSMETICS / CREAM / LOTION'</label><label class="catmenulbl" onclick="setSubCateDefault(this)" data-catid="3">'CROCKERY INV'</label><label class="selectMenuSlide" onclick="setSubCateDefault(this)" data-catid="27">'DAIRY / FROZEN PRODUCTS'</label><label class="catmenulbl" onclick="setSubCateDefault(this)" data-catid="33">'DENTAL CARE'</label><label class="catmenulbl" onclick="setSubCateDefault(this)" data-catid="38">'DEO / TALCULM POWDER'</label><label class="catmenulbl" onclick="setSubCateDefault(this)" data-catid="17">'DOORMAT'</label><label class="catmenulbl" onclick="setSubCateDefault(this)" data-catid="10">'DRY FRUITS'</label><label class="catmenulbl" onclick="setSubCateDefault(this)" data-catid="25">'FARSAN/ CHIKKI'</label><label class="catmenulbl" onclick="setSubCateDefault(this)" data-catid="40">'FAST FOOD (READYTO EAT)'</label><label class="catmenulbl" onclick="setSubCateDefault(this)" data-catid="1">'FRUITS &amp; VEGETABLES'</label><label class="catmenulbl" onclick="setSubCateDefault(this)" data-catid="31">'GROCERY'</label><label class="catmenulbl" onclick="setSubCateDefault(this)" data-catid="35">'HAIR CARE'</label><label class="catmenulbl" onclick="setSubCateDefault(this)" data-catid="32">'HOSIERY INV'</label><label class="catmenulbl" onclick="setSubCateDefault(this)" data-catid="39">'INSECTICIDES / REPELLANTS'</label><label class="catmenulbl" onclick="setSubCateDefault(this)" data-catid="21">'JAM/ KETCHUP/ SYRUPS'</label><label class="catmenulbl" onclick="setSubCateDefault(this)" data-catid="42">'MISCELLANEOUS'</label><label class="catmenulbl" onclick="setSubCateDefault(this)" data-catid="9">'OILS &amp; GHEE'</label><label class="catmenulbl" onclick="setSubCateDefault(this)" data-catid="16">'OTHER (GENERAL) ITEMS'</label><label class="catmenulbl" onclick="setSubCateDefault(this)" data-catid="22">'PAPAD/ FRYUMS/ PICKLES'</label><label class="catmenulbl" onclick="setSubCateDefault(this)" data-catid="5">'PLASTIC (GENERAL)'</label><label class="catmenulbl" onclick="setSubCateDefault(this)" data-catid="4">'PLASTIC PRODUCTS INV'</label><label class="catmenulbl" onclick="setSubCateDefault(this)" data-catid="15">'POOJA ITEMS'</label><label class="catmenulbl" onclick="setSubCateDefault(this)" data-catid="18">'SALT &amp; SUGAR'</label><label class="catmenulbl" onclick="setSubCateDefault(this)" data-catid="30">'SANITARY NAPKINS / DIAPERS'</label><label class="catmenulbl" onclick="setSubCateDefault(this)" data-catid="37">'SHAVING PRODUCTS'</label><label class="catmenulbl" onclick="setSubCateDefault(this)" data-catid="19">'SPICES &amp; MASALAS'</label><label class="catmenulbl" onclick="setSubCateDefault(this)" data-catid="8">'TEA COFFEE'</label><label class="catmenulbl" onclick="setSubCateDefault(this)" data-catid="23">'UPVAS (FASTING) ITEMS'</label><label class="catmenulbl" onclick="setSubCateDefault(this)" data-catid="44">'UTENSILS'</label><label class="catmenulbl" onclick="setSubCateDefault(this)" data-catid="29">'WASHING SOAP/ DETERGENTS'</label></div>
+    				</div>
+    			</div>
+    		</div>
+            
+            <!-- <div class="category-slider-area" style="margin-top: 12px;"> -->
+    			<!-- <div class="row" style="padding: 0;margin: 0;"> -->
+    				<!-- <div class="col-12" style="padding: 0;margin: 0;"> -->
+    					<!-- <div class="sub-cat-slides-menu scrollmenu" id="scrollcatMenu"> -->
+    					<!-- </div> -->
+    				<!-- </div> -->
+    			<!-- </div> -->
+    		<!-- </div> -->
+    		<!-- <div class="category-slider-area  space-pb--15"> -->
+    			<!-- <div class="row" style="padding: 0;margin: 0;"> -->
+    				<!-- <div class="col-12" style="padding: 0;margin: 0;"> -->
+    					<!-- <div class="sub-subcat-slides-menu scrollmenu" id="scrollsubcatMenu"> -->
+    					<!-- </div> -->
+    				<!-- </div> -->
+    			<!-- </div> -->
+    		<!-- </div> -->
+			<div class="category-slider-area  space-pb--15">
+    			<div class="row" style="padding: 0;margin: 0;">
+    				<div class="col-12" style="padding: 0;margin: 0;">
+    					<div class="sub-subcat-slides-menu scrollmenu" id="scrollsubcatMenu"><label class="subcatemenuitem catmenulbl" onclick="setSubCateProducts(this)" data-subcatid="183">'AMRAKHAND/ SHRIKHAND'</label><label class="subcatemenuitem catmenulbl" onclick="setSubCateProducts(this)" data-subcatid="56">'BUTTER'</label><label class="subcatemenuitem selectMenuSlide" onclick="setSubCateProducts(this)" data-subcatid="9">'CHEESE'</label><label class="subcatemenuitem catmenulbl" onclick="setSubCateProducts(this)" data-subcatid="96">'DAHI'</label><label class="subcatemenuitem catmenulbl" onclick="setSubCateProducts(this)" data-subcatid="167">'DAIRY / MILK PRODUCTS'</label><label class="subcatemenuitem catmenulbl" onclick="setSubCateProducts(this)" data-subcatid="163">'GREEN PEAS'</label><label class="subcatemenuitem catmenulbl" onclick="setSubCateProducts(this)" data-subcatid="184">'GREEN PEAS'</label><label class="subcatemenuitem catmenulbl" onclick="setSubCateProducts(this)" data-subcatid="87">'MILK'</label><label class="subcatemenuitem catmenulbl" onclick="setSubCateProducts(this)" data-subcatid="33">'OTHER FROZEN PRODUTCS'</label><label class="subcatemenuitem catmenulbl" onclick="setSubCateProducts(this)" data-subcatid="149">'PANEER'</label><label class="subcatemenuitem catmenulbl" onclick="setSubCateProducts(this)" data-subcatid="16">'SHRIKHAND'</label><label class="subcatemenuitem catmenulbl" onclick="setSubCateProducts(this)" data-subcatid="43">'SWEET'</label></div>
+    				</div>
+    			</div>
+    		</div>
+		
+        </header>
+        <!--====================  End of header area  ====================-->
+        
+		<!--====================  slids menu bar area  ====================-->
+		
+			
+        <!--====================  End of slids menu  ====================-->
+		
+		
+        <!--====================  products area ====================-->
+        <!-- <div class="shop-products-area"> -->
+            <!-- <!-- shop grid products --> -->
+            <!-- <div class="container"> -->
+                <!-- <p style="font-weight: bold;font-size: 16px;">Total Product(s): <span id="total_prod_count"></span></p> -->
+            <!-- </div> -->
+            <!-- <div class="shop-grid-products-wrapper space-mt--30 space-mb-m--20"> -->
+                <!-- <div class="container" id="productlistslider"> -->
+                    
+                <!-- </div> -->
+            <!-- </div> -->
+        <!-- </div> -->
+		<div class="shop-products-area">
+            <!-- shop grid products -->
+            <div class="container">
+                <p style="font-weight: bold;font-size: 16px;">Total Product(s): <span id="total_prod_count">20</span></p>
+            </div>
+            <div class="shop-grid-products-wrapper space-mt--30 space-mb-m--20">
+                <div class="container" id="productlistslider">
+                    
+                <div class="row grid-product"><div class="col-4"><div class="space-mt--10"><div class="grid-product__image"><img src="assets/images/1799.jpg" class="proImg img-fluid" alt=""><label class="productDiscount  ">5% off</label></div></div></div><div class="col"><div class="space-mt--10"><div class="grid-product__content"><h3 class="title">'BRIT CHEESE BLOCK 200GM'</h3><select onchange="changevarient(this)" class="form-control form-control-varient varientclass" id="exampleFormControlSelect1"></select><div class="price"><span class="main-price priceMrpDivclass">₹140</span><div class="qty pull-right showPlusMinus" id="qtyAddminus"><span onclick="minusCartQty(this)" class="minus bg-dark qtyMinus" data-productid="1682">-</span><input type="number" id="qtyCount" class="count qtyCount" name="qty" value="1"><span onclick="addQtyCart(this)" class="plus bg-dark qtyAdd" data-productid="1682">+</span></div><button id="btnMainadd" data-varientid="" data-prodctdetails="{&quot;pos_product_mstr_id&quot;:&quot;7272&quot;,&quot;product_id&quot;:&quot;1682&quot;,&quot;product_name&quot;:&quot;BRIT CHEESE BLOCK 200GM&quot;,&quot;upc_code&quot;:&quot;&quot;,&quot;product_description&quot;:&quot;&quot;,&quot;product_specification&quot;:&quot;&quot;,&quot;keywords&quot;:null,&quot;product_variation_id&quot;:&quot;GM&quot;,&quot;product_variation_key&quot;:&quot;200&quot;,&quot;variant_code&quot;:&quot;&quot;,&quot;image&quot;:&quot;//nearbygrocer.com/images/product_gallery/buss_1/1682.jpg&quot;,&quot;status&quot;:&quot;1&quot;,&quot;mrp&quot;:&quot;140.00&quot;,&quot;selling_price&quot;:&quot;133.00&quot;,&quot;quantity&quot;:&quot;11.00&quot;,&quot;product_type&quot;:&quot;Simple&quot;,&quot;variants&quot;:[]} " onclick="addBtnCart(this)" data-productid="1682" type="button" class=" hideAdd pull-right btnMainadd btn btn-success btn-sm w-50">ADD</button><br><span class="discounted-price priceSellingDivclass">₹133</span></div></div></div></div></div><br><div class="row grid-product"><div class="col-4"><div class="space-mt--10"><div class="grid-product__image"><img src="assets/images/1799.jpg" class="proImg img-fluid" alt=""><label class="productDiscount  ">5% off</label></div></div></div><div class="col"><div class="space-mt--10"><div class="grid-product__content"><h3 class="title">'AMUL CHEESE BLOCK 200GM'</h3><select onchange="changevarient(this)" class="form-control form-control-varient varientclass" id="exampleFormControlSelect1"></select><div class="price"><span class="main-price priceMrpDivclass">₹102</span><div class="qty pull-right showPlusMinus" id="qtyAddminus"><span onclick="minusCartQty(this)" class="minus bg-dark qtyMinus" data-productid="1799">-</span><input type="number" id="qtyCount" class="count qtyCount" name="qty" value="1"><span onclick="addQtyCart(this)" class="plus bg-dark qtyAdd" data-productid="1799">+</span></div><button id="btnMainadd" data-varientid="" data-prodctdetails="{&quot;pos_product_mstr_id&quot;:&quot;7002&quot;,&quot;product_id&quot;:&quot;1799&quot;,&quot;product_name&quot;:&quot;AMUL CHEESE BLOCK 200GM&quot;,&quot;upc_code&quot;:&quot;&quot;,&quot;product_description&quot;:&quot;&quot;,&quot;product_specification&quot;:&quot;&quot;,&quot;keywords&quot;:null,&quot;product_variation_id&quot;:&quot;GM&quot;,&quot;product_variation_key&quot;:&quot;200&quot;,&quot;variant_code&quot;:&quot;&quot;,&quot;image&quot;:&quot;//nearbygrocer.com/images/product_gallery/buss_1/1799.jpg&quot;,&quot;status&quot;:&quot;1&quot;,&quot;mrp&quot;:&quot;102.00&quot;,&quot;selling_price&quot;:&quot;96.90&quot;,&quot;quantity&quot;:&quot;20.00&quot;,&quot;product_type&quot;:&quot;Simple&quot;,&quot;variants&quot;:[]} " onclick="addBtnCart(this)" data-productid="1799" type="button" class=" hideAdd pull-right btnMainadd btn btn-success btn-sm w-50">ADD</button><br><span class="discounted-price priceSellingDivclass">₹96.9</span></div></div></div></div></div><br><div class="row grid-product"><div class="col-4"><div class="space-mt--10"><div class="grid-product__image"><img src="assets/images/1800.jpg" class="proImg img-fluid" alt=""><label class="productDiscount  ">5% off</label></div></div></div><div class="col"><div class="space-mt--10"><div class="grid-product__content"><h3 class="title">'AMUL CHEESE SLICE 200G PLS'</h3><select onchange="changevarient(this)" class="form-control form-control-varient varientclass" id="exampleFormControlSelect1"></select><div class="price"><span class="main-price priceMrpDivclass">₹118</span><div class="qty pull-right showPlusMinus" id="qtyAddminus"><span onclick="minusCartQty(this)" class="minus bg-dark qtyMinus" data-productid="1800">-</span><input type="number" id="qtyCount" class="count qtyCount" name="qty" value="1"><span onclick="addQtyCart(this)" class="plus bg-dark qtyAdd" data-productid="1800">+</span></div><button id="btnMainadd" data-varientid="" data-prodctdetails="{&quot;pos_product_mstr_id&quot;:&quot;2531&quot;,&quot;product_id&quot;:&quot;1800&quot;,&quot;product_name&quot;:&quot;AMUL CHEESE SLICE 200G PLS&quot;,&quot;upc_code&quot;:&quot;&quot;,&quot;product_description&quot;:&quot;&quot;,&quot;product_specification&quot;:&quot;&quot;,&quot;keywords&quot;:null,&quot;product_variation_id&quot;:&quot;GM&quot;,&quot;product_variation_key&quot;:&quot;200&quot;,&quot;variant_code&quot;:&quot;&quot;,&quot;image&quot;:&quot;//nearbygrocer.com/images/product_gallery/buss_1/1800.jpg&quot;,&quot;status&quot;:&quot;1&quot;,&quot;mrp&quot;:&quot;118.00&quot;,&quot;selling_price&quot;:&quot;112.10&quot;,&quot;quantity&quot;:&quot;12.00&quot;,&quot;product_type&quot;:&quot;Simple&quot;,&quot;variants&quot;:[]} " onclick="addBtnCart(this)" data-productid="1800" type="button" class=" hideAdd pull-right btnMainadd btn btn-success btn-sm w-50">ADD</button><br><span class="discounted-price priceSellingDivclass">₹112.1</span></div></div></div></div></div><br><div class="row grid-product"><div class="col-4"><div class="space-mt--10"><div class="grid-product__image"><img src="assets/images/1799.jpg" class="proImg img-fluid" alt=""><label class="productDiscount  ">5% off</label></div></div></div><div class="col"><div class="space-mt--10"><div class="grid-product__content"><h3 class="title">'AMUL CHEESE SPR PLAIN 200 GM'</h3><select onchange="changevarient(this)" class="form-control form-control-varient varientclass" id="exampleFormControlSelect1"></select><div class="price"><span class="main-price priceMrpDivclass">₹80</span><div class="qty pull-right showPlusMinus" id="qtyAddminus"><span onclick="minusCartQty(this)" class="minus bg-dark qtyMinus" data-productid="3051">-</span><input type="number" id="qtyCount" class="count qtyCount" name="qty" value="1"><span onclick="addQtyCart(this)" class="plus bg-dark qtyAdd" data-productid="3051">+</span></div><button id="btnMainadd" data-varientid="" data-prodctdetails="{&quot;pos_product_mstr_id&quot;:&quot;2512&quot;,&quot;product_id&quot;:&quot;3051&quot;,&quot;product_name&quot;:&quot;AMUL CHEESE SPR PLAIN 200 GM&quot;,&quot;upc_code&quot;:&quot;&quot;,&quot;product_description&quot;:&quot;&quot;,&quot;product_specification&quot;:&quot;&quot;,&quot;keywords&quot;:null,&quot;product_variation_id&quot;:&quot;GM&quot;,&quot;product_variation_key&quot;:&quot;200&quot;,&quot;variant_code&quot;:&quot;&quot;,&quot;image&quot;:&quot;//nearbygrocer.com/images/product_gallery/buss_1/3051.jpg&quot;,&quot;status&quot;:&quot;1&quot;,&quot;mrp&quot;:&quot;80.00&quot;,&quot;selling_price&quot;:&quot;76.00&quot;,&quot;quantity&quot;:&quot;18.00&quot;,&quot;product_type&quot;:&quot;Simple&quot;,&quot;variants&quot;:[]} " onclick="addBtnCart(this)" data-productid="3051" type="button" class=" hideAdd pull-right btnMainadd btn btn-success btn-sm w-50">ADD</button><br><span class="discounted-price priceSellingDivclass">₹76</span></div></div></div></div></div><br><div class="row grid-product"><div class="col-4"><div class="space-mt--10"><div class="grid-product__image"><img src="assets/images/1800.jpg" class="proImg img-fluid" alt=""><label class="productDiscount  ">5% off</label></div></div></div><div class="col"><div class="space-mt--10"><div class="grid-product__content"><h3 class="title">'MOTER DAIRY CHEESE CUBE 180GM'</h3><select onchange="changevarient(this)" class="form-control form-control-varient varientclass" id="exampleFormControlSelect1"></select><div class="price"><span class="main-price priceMrpDivclass">₹110</span><div class="qty pull-right showPlusMinus" id="qtyAddminus"><span onclick="minusCartQty(this)" class="minus bg-dark qtyMinus" data-productid="3973">-</span><input type="number" id="qtyCount" class="count qtyCount" name="qty" value="1"><span onclick="addQtyCart(this)" class="plus bg-dark qtyAdd" data-productid="3973">+</span></div><button id="btnMainadd" data-varientid="" data-prodctdetails="{&quot;pos_product_mstr_id&quot;:&quot;2667&quot;,&quot;product_id&quot;:&quot;3973&quot;,&quot;product_name&quot;:&quot;MOTER DAIRY CHEESE CUBE 180GM&quot;,&quot;upc_code&quot;:&quot;&quot;,&quot;product_description&quot;:&quot;&quot;,&quot;product_specification&quot;:&quot;&quot;,&quot;keywords&quot;:null,&quot;product_variation_id&quot;:&quot;GM&quot;,&quot;product_variation_key&quot;:&quot;180&quot;,&quot;variant_code&quot;:&quot;&quot;,&quot;image&quot;:&quot;//nearbygrocer.com/images/product_gallery/buss_1/3973.jpg&quot;,&quot;status&quot;:&quot;1&quot;,&quot;mrp&quot;:&quot;110.00&quot;,&quot;selling_price&quot;:&quot;104.00&quot;,&quot;quantity&quot;:&quot;9.00&quot;,&quot;product_type&quot;:&quot;Simple&quot;,&quot;variants&quot;:[]} " onclick="addBtnCart(this)" data-productid="3973" type="button" class=" hideAdd pull-right btnMainadd btn btn-success btn-sm w-50">ADD</button><br><span class="discounted-price priceSellingDivclass">₹104</span></div></div></div></div></div><br><div class="row grid-product"><div class="col-4"><div class="space-mt--10"><div class="grid-product__image"><img src="assets/images/1799.jpg" class="proImg img-fluid" alt=""><label class="productDiscount  ">5% off</label></div></div></div><div class="col"><div class="space-mt--10"><div class="grid-product__content"><h3 class="title">'GO CHEESE SLICE 100GM'</h3><select onchange="changevarient(this)" class="form-control form-control-varient varientclass" id="exampleFormControlSelect1"></select><div class="price"><span class="main-price priceMrpDivclass">₹72</span><div class="qty pull-right showPlusMinus" id="qtyAddminus"><span onclick="minusCartQty(this)" class="minus bg-dark qtyMinus" data-productid="7276">-</span><input type="number" id="qtyCount" class="count qtyCount" name="qty" value="1"><span onclick="addQtyCart(this)" class="plus bg-dark qtyAdd" data-productid="7276">+</span></div><button id="btnMainadd" data-varientid="" data-prodctdetails="{&quot;pos_product_mstr_id&quot;:&quot;566&quot;,&quot;product_id&quot;:&quot;7276&quot;,&quot;product_name&quot;:&quot;GO CHEESE SLICE 100GM&quot;,&quot;upc_code&quot;:&quot;&quot;,&quot;product_description&quot;:&quot;&quot;,&quot;product_specification&quot;:&quot;&quot;,&quot;keywords&quot;:null,&quot;product_variation_id&quot;:&quot;GM&quot;,&quot;product_variation_key&quot;:&quot;100&quot;,&quot;variant_code&quot;:&quot;&quot;,&quot;image&quot;:&quot;//nearbygrocer.com/images/product_gallery/buss_1/7276.jpg&quot;,&quot;status&quot;:&quot;1&quot;,&quot;mrp&quot;:&quot;72.00&quot;,&quot;selling_price&quot;:&quot;68.40&quot;,&quot;quantity&quot;:&quot;1.00&quot;,&quot;product_type&quot;:&quot;Simple&quot;,&quot;variants&quot;:[]} " onclick="addBtnCart(this)" data-productid="7276" type="button" class=" hideAdd pull-right btnMainadd btn btn-success btn-sm w-50">ADD</button><br><span class="discounted-price priceSellingDivclass">₹68.4</span></div></div></div></div></div><br><div class="row grid-product"><div class="col-4"><div class="space-mt--10"><div class="grid-product__image"><img src="assets/images/1800.jpg" class="proImg img-fluid" alt=""><label class="productDiscount  ">5% off</label></div></div></div><div class="col"><div class="space-mt--10"><div class="grid-product__content"><h3 class="title">'GO PROCESSED CHESE BLOCK 400G'</h3><select onchange="changevarient(this)" class="form-control form-control-varient varientclass" id="exampleFormControlSelect1"></select><div class="price"><span class="main-price priceMrpDivclass">₹240</span><div class="qty pull-right showPlusMinus" id="qtyAddminus"><span onclick="minusCartQty(this)" class="minus bg-dark qtyMinus" data-productid="7979">-</span><input type="number" id="qtyCount" class="count qtyCount" name="qty" value="1"><span onclick="addQtyCart(this)" class="plus bg-dark qtyAdd" data-productid="7979">+</span></div><button id="btnMainadd" data-varientid="" data-prodctdetails="{&quot;pos_product_mstr_id&quot;:&quot;3797&quot;,&quot;product_id&quot;:&quot;7979&quot;,&quot;product_name&quot;:&quot;GO PROCESSED CHESE BLOCK 400G&quot;,&quot;upc_code&quot;:&quot;&quot;,&quot;product_description&quot;:&quot;&quot;,&quot;product_specification&quot;:&quot;&quot;,&quot;keywords&quot;:null,&quot;product_variation_id&quot;:&quot;GM&quot;,&quot;product_variation_key&quot;:&quot;400&quot;,&quot;variant_code&quot;:&quot;&quot;,&quot;image&quot;:&quot;//nearbygrocer.com/images/product_gallery/buss_1/7979.jpg&quot;,&quot;status&quot;:&quot;1&quot;,&quot;mrp&quot;:&quot;240.00&quot;,&quot;selling_price&quot;:&quot;228.00&quot;,&quot;quantity&quot;:&quot;1.00&quot;,&quot;product_type&quot;:&quot;Simple&quot;,&quot;variants&quot;:[]} " onclick="addBtnCart(this)" data-productid="7979" type="button" class=" hideAdd pull-right btnMainadd btn btn-success btn-sm w-50">ADD</button><br><span class="discounted-price priceSellingDivclass">₹228</span></div></div></div></div></div><br><div class="row grid-product"><div class="col-4"><div class="space-mt--10"><div class="grid-product__image"><img src="assets/images/1799.jpg" class="proImg img-fluid" alt=""><label class="productDiscount  ">5% off</label></div></div></div><div class="col"><div class="space-mt--10"><div class="grid-product__content"><h3 class="title">'AMUL CHEESE BLOCK 1 KG'</h3><select onchange="changevarient(this)" class="form-control form-control-varient varientclass" id="exampleFormControlSelect1"></select><div class="price"><span class="main-price priceMrpDivclass">₹433</span><div class="qty pull-right showPlusMinus" id="qtyAddminus"><span onclick="minusCartQty(this)" class="minus bg-dark qtyMinus" data-productid="8380">-</span><input type="number" id="qtyCount" class="count qtyCount" name="qty" value="2"><span onclick="addQtyCart(this)" class="plus bg-dark qtyAdd" data-productid="8380">+</span></div><button id="btnMainadd" data-varientid="" data-prodctdetails="{&quot;pos_product_mstr_id&quot;:&quot;9664&quot;,&quot;product_id&quot;:&quot;8380&quot;,&quot;product_name&quot;:&quot;AMUL CHEESE BLOCK 1 KG&quot;,&quot;upc_code&quot;:&quot;&quot;,&quot;product_description&quot;:&quot;&quot;,&quot;product_specification&quot;:&quot;&quot;,&quot;keywords&quot;:null,&quot;product_variation_id&quot;:&quot;KG&quot;,&quot;product_variation_key&quot;:&quot;1&quot;,&quot;variant_code&quot;:&quot;&quot;,&quot;image&quot;:&quot;//nearbygrocer.com/images/product_gallery/buss_1/8380.jpg&quot;,&quot;status&quot;:&quot;1&quot;,&quot;mrp&quot;:&quot;433.00&quot;,&quot;selling_price&quot;:&quot;411.00&quot;,&quot;quantity&quot;:&quot;12.00&quot;,&quot;product_type&quot;:&quot;Simple&quot;,&quot;variants&quot;:[]} " onclick="addBtnCart(this)" data-productid="8380" type="button" class=" hideAdd pull-right btnMainadd btn btn-success btn-sm w-50">ADD</button><br><span class="discounted-price priceSellingDivclass">₹411</span></div></div></div></div></div><br><div class="row grid-product"><div class="col-4"><div class="space-mt--10"><div class="grid-product__image"><img src="assets/images/1800.jpg" class="proImg img-fluid" alt=""><label class="productDiscount  ">5% off</label></div></div></div><div class="col"><div class="space-mt--10"><div class="grid-product__content"><h3 class="title">'AMUL CHEESE CUBE  200G'</h3><select onchange="changevarient(this)" class="form-control form-control-varient varientclass" id="exampleFormControlSelect1"></select><div class="price"><span class="main-price priceMrpDivclass">₹110</span><div class="qty pull-right " id="qtyAddminus"><span onclick="minusCartQty(this)" class="minus bg-dark qtyMinus" data-productid="8381">-</span><input type="number" id="qtyCount" class="count qtyCount" name="qty" value="1"><span onclick="addQtyCart(this)" class="plus bg-dark qtyAdd" data-productid="8381">+</span></div><button id="btnMainadd" data-varientid="" data-prodctdetails="{&quot;pos_product_mstr_id&quot;:&quot;9303&quot;,&quot;product_id&quot;:&quot;8381&quot;,&quot;product_name&quot;:&quot;AMUL CHEESE CUBE  200G&quot;,&quot;upc_code&quot;:&quot;&quot;,&quot;product_description&quot;:&quot;&quot;,&quot;product_specification&quot;:&quot;&quot;,&quot;keywords&quot;:null,&quot;product_variation_id&quot;:&quot;NO&quot;,&quot;product_variation_key&quot;:&quot;8&quot;,&quot;variant_code&quot;:&quot;&quot;,&quot;image&quot;:&quot;//nearbygrocer.com/images/product_gallery/buss_1/8381.jpg&quot;,&quot;status&quot;:&quot;1&quot;,&quot;mrp&quot;:&quot;110.00&quot;,&quot;selling_price&quot;:&quot;104.50&quot;,&quot;quantity&quot;:&quot;8.00&quot;,&quot;product_type&quot;:&quot;Simple&quot;,&quot;variants&quot;:[]} " onclick="addBtnCart(this)" data-productid="8381" type="button" class="  pull-right btnMainadd btn btn-success btn-sm w-50">ADD</button><br><span class="discounted-price priceSellingDivclass">₹104.5</span></div></div></div></div></div><br><div class="row grid-product"><div class="col-4"><div class="space-mt--10"><div class="grid-product__image"><img src="assets/images/1799.jpg" class="proImg img-fluid" alt=""><label class="productDiscount  ">5% off</label></div></div></div><div class="col"><div class="space-mt--10"><div class="grid-product__content"><h3 class="title">'AMUL CHEESE CUBE 500 GM'</h3><select onchange="changevarient(this)" class="form-control form-control-varient varientclass" id="exampleFormControlSelect1"></select><div class="price"><span class="main-price priceMrpDivclass">₹250</span><div class="qty pull-right " id="qtyAddminus"><span onclick="minusCartQty(this)" class="minus bg-dark qtyMinus" data-productid="8382">-</span><input type="number" id="qtyCount" class="count qtyCount" name="qty" value="1"><span onclick="addQtyCart(this)" class="plus bg-dark qtyAdd" data-productid="8382">+</span></div><button id="btnMainadd" data-varientid="" data-prodctdetails="{&quot;pos_product_mstr_id&quot;:&quot;197&quot;,&quot;product_id&quot;:&quot;8382&quot;,&quot;product_name&quot;:&quot;AMUL CHEESE CUBE 500 GM&quot;,&quot;upc_code&quot;:&quot;&quot;,&quot;product_description&quot;:&quot;&quot;,&quot;product_specification&quot;:&quot;&quot;,&quot;keywords&quot;:null,&quot;product_variation_id&quot;:&quot;GM&quot;,&quot;product_variation_key&quot;:&quot;500&quot;,&quot;variant_code&quot;:&quot;&quot;,&quot;image&quot;:&quot;//nearbygrocer.com/images/product_gallery/buss_1/8382.jpg&quot;,&quot;status&quot;:&quot;1&quot;,&quot;mrp&quot;:&quot;250.00&quot;,&quot;selling_price&quot;:&quot;237.50&quot;,&quot;quantity&quot;:&quot;10.00&quot;,&quot;product_type&quot;:&quot;Simple&quot;,&quot;variants&quot;:[]} " onclick="addBtnCart(this)" data-productid="8382" type="button" class="  pull-right btnMainadd btn btn-success btn-sm w-50">ADD</button><br><span class="discounted-price priceSellingDivclass">₹237.5</span></div></div></div></div></div><br><div class="row grid-product"><div class="col-4"><div class="space-mt--10"><div class="grid-product__image"><img src="assets/images/1800.jpg" class="proImg img-fluid" alt=""><label class="productDiscount  ">5% off</label></div></div></div><div class="col"><div class="space-mt--10"><div class="grid-product__content"><h3 class="title">'AMUL CHEESE SLICE 100G PLS'</h3><select onchange="changevarient(this)" class="form-control form-control-varient varientclass" id="exampleFormControlSelect1"></select><div class="price"><span class="main-price priceMrpDivclass">₹69</span><div class="qty pull-right " id="qtyAddminus"><span onclick="minusCartQty(this)" class="minus bg-dark qtyMinus" data-productid="8384">-</span><input type="number" id="qtyCount" class="count qtyCount" name="qty" value="1"><span onclick="addQtyCart(this)" class="plus bg-dark qtyAdd" data-productid="8384">+</span></div><button id="btnMainadd" data-varientid="" data-prodctdetails="{&quot;pos_product_mstr_id&quot;:&quot;8924&quot;,&quot;product_id&quot;:&quot;8384&quot;,&quot;product_name&quot;:&quot;AMUL CHEESE SLICE 100G PLS&quot;,&quot;upc_code&quot;:&quot;&quot;,&quot;product_description&quot;:&quot;&quot;,&quot;product_specification&quot;:&quot;&quot;,&quot;keywords&quot;:null,&quot;product_variation_id&quot;:&quot;GM&quot;,&quot;product_variation_key&quot;:&quot;100&quot;,&quot;variant_code&quot;:&quot;&quot;,&quot;image&quot;:&quot;//nearbygrocer.com/images/product_gallery/buss_1/8384.jpg&quot;,&quot;status&quot;:&quot;1&quot;,&quot;mrp&quot;:&quot;69.00&quot;,&quot;selling_price&quot;:&quot;65.55&quot;,&quot;quantity&quot;:&quot;30.00&quot;,&quot;product_type&quot;:&quot;Simple&quot;,&quot;variants&quot;:[]} " onclick="addBtnCart(this)" data-productid="8384" type="button" class="  pull-right btnMainadd btn btn-success btn-sm w-50">ADD</button><br><span class="discounted-price priceSellingDivclass">₹65.55</span></div></div></div></div></div><br><div class="row grid-product"><div class="col-4"><div class="space-mt--10"><div class="grid-product__image"><img src="assets/images/1799.jpg" class="proImg img-fluid" alt=""><label class="productDiscount  ">5% off</label></div></div></div><div class="col"><div class="space-mt--10"><div class="grid-product__content"><h3 class="title">'AMUL CHEESE SLICES 750GM'</h3><select onchange="changevarient(this)" class="form-control form-control-varient varientclass" id="exampleFormControlSelect1"></select><div class="price"><span class="main-price priceMrpDivclass">₹346</span><div class="qty pull-right " id="qtyAddminus"><span onclick="minusCartQty(this)" class="minus bg-dark qtyMinus" data-productid="8385">-</span><input type="number" id="qtyCount" class="count qtyCount" name="qty" value="1"><span onclick="addQtyCart(this)" class="plus bg-dark qtyAdd" data-productid="8385">+</span></div><button id="btnMainadd" data-varientid="" data-prodctdetails="{&quot;pos_product_mstr_id&quot;:&quot;3541&quot;,&quot;product_id&quot;:&quot;8385&quot;,&quot;product_name&quot;:&quot;AMUL CHEESE SLICES 750GM&quot;,&quot;upc_code&quot;:&quot;&quot;,&quot;product_description&quot;:&quot;&quot;,&quot;product_specification&quot;:&quot;&quot;,&quot;keywords&quot;:null,&quot;product_variation_id&quot;:&quot;GM&quot;,&quot;product_variation_key&quot;:&quot;750&quot;,&quot;variant_code&quot;:&quot;&quot;,&quot;image&quot;:&quot;//nearbygrocer.com/images/product_gallery/buss_1/8385.jpg&quot;,&quot;status&quot;:&quot;1&quot;,&quot;mrp&quot;:&quot;346.00&quot;,&quot;selling_price&quot;:&quot;329.00&quot;,&quot;quantity&quot;:&quot;1.00&quot;,&quot;product_type&quot;:&quot;Simple&quot;,&quot;variants&quot;:[]} " onclick="addBtnCart(this)" data-productid="8385" type="button" class="  pull-right btnMainadd btn btn-success btn-sm w-50">ADD</button><br><span class="discounted-price priceSellingDivclass">₹329</span></div></div></div></div></div><br><div class="row grid-product"><div class="col-4"><div class="space-mt--10"><div class="grid-product__image"><img src="//nearbygrocer.com/images/product_gallery/buss_1/8686.jpg" class="proImg img-fluid" alt=""><label class="productDiscount  ">5% off</label></div></div></div><div class="col"><div class="space-mt--10"><div class="grid-product__content"><h3 class="title">'AMUL DELICIOUS 100GM'</h3><select onchange="changevarient(this)" class="form-control form-control-varient varientclass" id="exampleFormControlSelect1"></select><div class="price"><span class="main-price priceMrpDivclass">₹14</span><div class="qty pull-right " id="qtyAddminus"><span onclick="minusCartQty(this)" class="minus bg-dark qtyMinus" data-productid="8686">-</span><input type="number" id="qtyCount" class="count qtyCount" name="qty" value="1"><span onclick="addQtyCart(this)" class="plus bg-dark qtyAdd" data-productid="8686">+</span></div><button id="btnMainadd" data-varientid="" data-prodctdetails="{&quot;pos_product_mstr_id&quot;:&quot;3533&quot;,&quot;product_id&quot;:&quot;8686&quot;,&quot;product_name&quot;:&quot;AMUL DELICIOUS 100GM&quot;,&quot;upc_code&quot;:&quot;&quot;,&quot;product_description&quot;:&quot;&quot;,&quot;product_specification&quot;:&quot;&quot;,&quot;keywords&quot;:null,&quot;product_variation_id&quot;:&quot;GM&quot;,&quot;product_variation_key&quot;:&quot;100&quot;,&quot;variant_code&quot;:&quot;&quot;,&quot;image&quot;:&quot;//nearbygrocer.com/images/product_gallery/buss_1/8686.jpg&quot;,&quot;status&quot;:&quot;1&quot;,&quot;mrp&quot;:&quot;14.00&quot;,&quot;selling_price&quot;:&quot;13.30&quot;,&quot;quantity&quot;:&quot;30.00&quot;,&quot;product_type&quot;:&quot;Simple&quot;,&quot;variants&quot;:[]} " onclick="addBtnCart(this)" data-productid="8686" type="button" class="  pull-right btnMainadd btn btn-success btn-sm w-50">ADD</button><br><span class="discounted-price priceSellingDivclass">₹13.3</span></div></div></div></div></div><br><div class="row grid-product"><div class="col-4"><div class="space-mt--10"><div class="grid-product__image"><img src="//nearbygrocer.com/images/product_gallery/buss_1/8687.jpg" class="proImg img-fluid" alt=""><label class="productDiscount  ">5% off</label></div></div></div><div class="col"><div class="space-mt--10"><div class="grid-product__content"><h3 class="title">'AMUL DICED CHEESE 200GM'</h3><select onchange="changevarient(this)" class="form-control form-control-varient varientclass" id="exampleFormControlSelect1"></select><div class="price"><span class="main-price priceMrpDivclass">₹100</span><div class="qty pull-right " id="qtyAddminus"><span onclick="minusCartQty(this)" class="minus bg-dark qtyMinus" data-productid="8687">-</span><input type="number" id="qtyCount" class="count qtyCount" name="qty" value="1"><span onclick="addQtyCart(this)" class="plus bg-dark qtyAdd" data-productid="8687">+</span></div><button id="btnMainadd" data-varientid="" data-prodctdetails="{&quot;pos_product_mstr_id&quot;:&quot;3556&quot;,&quot;product_id&quot;:&quot;8687&quot;,&quot;product_name&quot;:&quot;AMUL DICED CHEESE 200GM&quot;,&quot;upc_code&quot;:&quot;&quot;,&quot;product_description&quot;:&quot;&quot;,&quot;product_specification&quot;:&quot;&quot;,&quot;keywords&quot;:null,&quot;product_variation_id&quot;:&quot;GM&quot;,&quot;product_variation_key&quot;:&quot;200&quot;,&quot;variant_code&quot;:&quot;&quot;,&quot;image&quot;:&quot;//nearbygrocer.com/images/product_gallery/buss_1/8687.jpg&quot;,&quot;status&quot;:&quot;1&quot;,&quot;mrp&quot;:&quot;100.00&quot;,&quot;selling_price&quot;:&quot;95.00&quot;,&quot;quantity&quot;:&quot;1.00&quot;,&quot;product_type&quot;:&quot;Simple&quot;,&quot;variants&quot;:[]} " onclick="addBtnCart(this)" data-productid="8687" type="button" class="  pull-right btnMainadd btn btn-success btn-sm w-50">ADD</button><br><span class="discounted-price priceSellingDivclass">₹95</span></div></div></div></div></div><br><div class="row grid-product"><div class="col-4"><div class="space-mt--10"><div class="grid-product__image"><img src="//nearbygrocer.com/images/product_gallery/buss_1/9387.jpg" class="proImg img-fluid" alt=""><label class="productDiscount  ">5% off</label></div></div></div><div class="col"><div class="space-mt--10"><div class="grid-product__content"><h3 class="title">'BRIT CHEESE BLOCK 400G CBD'</h3><select onchange="changevarient(this)" class="form-control form-control-varient varientclass" id="exampleFormControlSelect1"></select><div class="price"><span class="main-price priceMrpDivclass">₹260</span><div class="qty pull-right " id="qtyAddminus"><span onclick="minusCartQty(this)" class="minus bg-dark qtyMinus" data-productid="9387">-</span><input type="number" id="qtyCount" class="count qtyCount" name="qty" value="1"><span onclick="addQtyCart(this)" class="plus bg-dark qtyAdd" data-productid="9387">+</span></div><button id="btnMainadd" data-varientid="" data-prodctdetails="{&quot;pos_product_mstr_id&quot;:&quot;2638&quot;,&quot;product_id&quot;:&quot;9387&quot;,&quot;product_name&quot;:&quot;BRIT CHEESE BLOCK 400G CBD&quot;,&quot;upc_code&quot;:&quot;&quot;,&quot;product_description&quot;:&quot;&quot;,&quot;product_specification&quot;:&quot;&quot;,&quot;keywords&quot;:null,&quot;product_variation_id&quot;:&quot;GM&quot;,&quot;product_variation_key&quot;:&quot;400&quot;,&quot;variant_code&quot;:&quot;&quot;,&quot;image&quot;:&quot;//nearbygrocer.com/images/product_gallery/buss_1/9387.jpg&quot;,&quot;status&quot;:&quot;1&quot;,&quot;mrp&quot;:&quot;260.00&quot;,&quot;selling_price&quot;:&quot;247.00&quot;,&quot;quantity&quot;:&quot;5.00&quot;,&quot;product_type&quot;:&quot;Simple&quot;,&quot;variants&quot;:[]} " onclick="addBtnCart(this)" data-productid="9387" type="button" class="  pull-right btnMainadd btn btn-success btn-sm w-50">ADD</button><br><span class="discounted-price priceSellingDivclass">₹247</span></div></div></div></div></div><br><div class="row grid-product"><div class="col-4"><div class="space-mt--10"><div class="grid-product__image"><img src="//nearbygrocer.com/images/product_gallery/buss_1/9389.jpg" class="proImg img-fluid" alt=""><label class="productDiscount  ">5% off</label></div></div></div><div class="col"><div class="space-mt--10"><div class="grid-product__content"><h3 class="title">'BRIT CHEESE CUBE 200GM'</h3><select onchange="changevarient(this)" class="form-control form-control-varient varientclass" id="exampleFormControlSelect1"></select><div class="price"><span class="main-price priceMrpDivclass">₹125</span><div class="qty pull-right " id="qtyAddminus"><span onclick="minusCartQty(this)" class="minus bg-dark qtyMinus" data-productid="9389">-</span><input type="number" id="qtyCount" class="count qtyCount" name="qty" value="1"><span onclick="addQtyCart(this)" class="plus bg-dark qtyAdd" data-productid="9389">+</span></div><button id="btnMainadd" data-varientid="" data-prodctdetails="{&quot;pos_product_mstr_id&quot;:&quot;8158&quot;,&quot;product_id&quot;:&quot;9389&quot;,&quot;product_name&quot;:&quot;BRIT CHEESE CUBE 200GM&quot;,&quot;upc_code&quot;:&quot;&quot;,&quot;product_description&quot;:&quot;&quot;,&quot;product_specification&quot;:&quot;&quot;,&quot;keywords&quot;:null,&quot;product_variation_id&quot;:&quot;GM&quot;,&quot;product_variation_key&quot;:&quot;200&quot;,&quot;variant_code&quot;:&quot;&quot;,&quot;image&quot;:&quot;//nearbygrocer.com/images/product_gallery/buss_1/9389.jpg&quot;,&quot;status&quot;:&quot;1&quot;,&quot;mrp&quot;:&quot;125.00&quot;,&quot;selling_price&quot;:&quot;118.75&quot;,&quot;quantity&quot;:&quot;32.00&quot;,&quot;product_type&quot;:&quot;Simple&quot;,&quot;variants&quot;:[]} " onclick="addBtnCart(this)" data-productid="9389" type="button" class="  pull-right btnMainadd btn btn-success btn-sm w-50">ADD</button><br><span class="discounted-price priceSellingDivclass">₹118.75</span></div></div></div></div></div><br><div class="row grid-product"><div class="col-4"><div class="space-mt--10"><div class="grid-product__image"><img src="//nearbygrocer.com/images/product_gallery/buss_1/9417.jpg" class="proImg img-fluid" alt=""><label class="productDiscount  ">5% off</label></div></div></div><div class="col"><div class="space-mt--10"><div class="grid-product__content"><h3 class="title">'BRIT CHEESE PIZZA 200 GM'</h3><select onchange="changevarient(this)" class="form-control form-control-varient varientclass" id="exampleFormControlSelect1"></select><div class="price"><span class="main-price priceMrpDivclass">₹160</span><div class="qty pull-right " id="qtyAddminus"><span onclick="minusCartQty(this)" class="minus bg-dark qtyMinus" data-productid="9417">-</span><input type="number" id="qtyCount" class="count qtyCount" name="qty" value="1"><span onclick="addQtyCart(this)" class="plus bg-dark qtyAdd" data-productid="9417">+</span></div><button id="btnMainadd" data-varientid="" data-prodctdetails="{&quot;pos_product_mstr_id&quot;:&quot;7836&quot;,&quot;product_id&quot;:&quot;9417&quot;,&quot;product_name&quot;:&quot;BRIT CHEESE PIZZA 200 GM&quot;,&quot;upc_code&quot;:&quot;&quot;,&quot;product_description&quot;:&quot;&quot;,&quot;product_specification&quot;:&quot;&quot;,&quot;keywords&quot;:null,&quot;product_variation_id&quot;:&quot;GM&quot;,&quot;product_variation_key&quot;:&quot;200&quot;,&quot;variant_code&quot;:&quot;&quot;,&quot;image&quot;:&quot;//nearbygrocer.com/images/product_gallery/buss_1/9417.jpg&quot;,&quot;status&quot;:&quot;1&quot;,&quot;mrp&quot;:&quot;160.00&quot;,&quot;selling_price&quot;:&quot;152.00&quot;,&quot;quantity&quot;:&quot;8.00&quot;,&quot;product_type&quot;:&quot;Simple&quot;,&quot;variants&quot;:[]} " onclick="addBtnCart(this)" data-productid="9417" type="button" class="  pull-right btnMainadd btn btn-success btn-sm w-50">ADD</button><br><span class="discounted-price priceSellingDivclass">₹152</span></div></div></div></div></div><br><div class="row grid-product"><div class="col-4"><div class="space-mt--10"><div class="grid-product__image"><img src="//nearbygrocer.com/images/product_gallery/buss_1/9418.jpg" class="proImg img-fluid" alt=""><label class="productDiscount  ">5% off</label></div></div></div><div class="col"><div class="space-mt--10"><div class="grid-product__content"><h3 class="title">'BRIT CHEESE SLICE 100GM'</h3><select onchange="changevarient(this)" class="form-control form-control-varient varientclass" id="exampleFormControlSelect1"></select><div class="price"><span class="main-price priceMrpDivclass">₹75</span><div class="qty pull-right " id="qtyAddminus"><span onclick="minusCartQty(this)" class="minus bg-dark qtyMinus" data-productid="9418">-</span><input type="number" id="qtyCount" class="count qtyCount" name="qty" value="1"><span onclick="addQtyCart(this)" class="plus bg-dark qtyAdd" data-productid="9418">+</span></div><button id="btnMainadd" data-varientid="" data-prodctdetails="{&quot;pos_product_mstr_id&quot;:&quot;8144&quot;,&quot;product_id&quot;:&quot;9418&quot;,&quot;product_name&quot;:&quot;BRIT CHEESE SLICE 100GM&quot;,&quot;upc_code&quot;:&quot;&quot;,&quot;product_description&quot;:&quot;&quot;,&quot;product_specification&quot;:&quot;&quot;,&quot;keywords&quot;:null,&quot;product_variation_id&quot;:&quot;GM&quot;,&quot;product_variation_key&quot;:&quot;100&quot;,&quot;variant_code&quot;:&quot;&quot;,&quot;image&quot;:&quot;//nearbygrocer.com/images/product_gallery/buss_1/9418.jpg&quot;,&quot;status&quot;:&quot;1&quot;,&quot;mrp&quot;:&quot;75.00&quot;,&quot;selling_price&quot;:&quot;71.25&quot;,&quot;quantity&quot;:&quot;8.00&quot;,&quot;product_type&quot;:&quot;Simple&quot;,&quot;variants&quot;:[]} " onclick="addBtnCart(this)" data-productid="9418" type="button" class="  pull-right btnMainadd btn btn-success btn-sm w-50">ADD</button><br><span class="discounted-price priceSellingDivclass">₹71.25</span></div></div></div></div></div><br><div class="row grid-product"><div class="col-4"><div class="space-mt--10"><div class="grid-product__image"><img src="//nearbygrocer.com/images/product_gallery/buss_1/9419.jpg" class="proImg img-fluid" alt=""><label class="productDiscount  ">5% off</label></div></div></div><div class="col"><div class="space-mt--10"><div class="grid-product__content"><h3 class="title">'BRIT CHEESE SLICE 200GM'</h3><select onchange="changevarient(this)" class="form-control form-control-varient varientclass" id="exampleFormControlSelect1"></select><div class="price"><span class="main-price priceMrpDivclass">₹145</span><div class="qty pull-right " id="qtyAddminus"><span onclick="minusCartQty(this)" class="minus bg-dark qtyMinus" data-productid="9419">-</span><input type="number" id="qtyCount" class="count qtyCount" name="qty" value="1"><span onclick="addQtyCart(this)" class="plus bg-dark qtyAdd" data-productid="9419">+</span></div><button id="btnMainadd" data-varientid="" data-prodctdetails="{&quot;pos_product_mstr_id&quot;:&quot;2535&quot;,&quot;product_id&quot;:&quot;9419&quot;,&quot;product_name&quot;:&quot;BRIT CHEESE SLICE 200GM&quot;,&quot;upc_code&quot;:&quot;&quot;,&quot;product_description&quot;:&quot;&quot;,&quot;product_specification&quot;:&quot;&quot;,&quot;keywords&quot;:null,&quot;product_variation_id&quot;:&quot;GM&quot;,&quot;product_variation_key&quot;:&quot;200&quot;,&quot;variant_code&quot;:&quot;&quot;,&quot;image&quot;:&quot;//nearbygrocer.com/images/product_gallery/buss_1/9419.jpg&quot;,&quot;status&quot;:&quot;1&quot;,&quot;mrp&quot;:&quot;145.00&quot;,&quot;selling_price&quot;:&quot;137.75&quot;,&quot;quantity&quot;:&quot;30.00&quot;,&quot;product_type&quot;:&quot;Simple&quot;,&quot;variants&quot;:[]} " onclick="addBtnCart(this)" data-productid="9419" type="button" class="  pull-right btnMainadd btn btn-success btn-sm w-50">ADD</button><br><span class="discounted-price priceSellingDivclass">₹137.75</span></div></div></div></div></div><br><div class="row grid-product"><div class="col-4"><div class="space-mt--10"><div class="grid-product__image"><img src="//nearbygrocer.com/images/product_gallery/buss_1/9420.jpg" class="proImg img-fluid" alt=""><label class="productDiscount  ">5% off</label></div></div></div><div class="col"><div class="space-mt--10"><div class="grid-product__content"><h3 class="title">'BRIT CHEESE SLICE 476GM'</h3><select onchange="changevarient(this)" class="form-control form-control-varient varientclass" id="exampleFormControlSelect1"></select><div class="price"><span class="main-price priceMrpDivclass">₹360</span><div class="qty pull-right " id="qtyAddminus"><span onclick="minusCartQty(this)" class="minus bg-dark qtyMinus" data-productid="9420">-</span><input type="number" id="qtyCount" class="count qtyCount" name="qty" value="1"><span onclick="addQtyCart(this)" class="plus bg-dark qtyAdd" data-productid="9420">+</span></div><button id="btnMainadd" data-varientid="" data-prodctdetails="{&quot;pos_product_mstr_id&quot;:&quot;6028&quot;,&quot;product_id&quot;:&quot;9420&quot;,&quot;product_name&quot;:&quot;BRIT CHEESE SLICE 476GM&quot;,&quot;upc_code&quot;:&quot;&quot;,&quot;product_description&quot;:&quot;&quot;,&quot;product_specification&quot;:&quot;&quot;,&quot;keywords&quot;:null,&quot;product_variation_id&quot;:&quot;GM&quot;,&quot;product_variation_key&quot;:&quot;476&quot;,&quot;variant_code&quot;:&quot;&quot;,&quot;image&quot;:&quot;//nearbygrocer.com/images/product_gallery/buss_1/9420.jpg&quot;,&quot;status&quot;:&quot;1&quot;,&quot;mrp&quot;:&quot;360.00&quot;,&quot;selling_price&quot;:&quot;342.00&quot;,&quot;quantity&quot;:&quot;7.00&quot;,&quot;product_type&quot;:&quot;Simple&quot;,&quot;variants&quot;:[]} " onclick="addBtnCart(this)" data-productid="9420" type="button" class="  pull-right btnMainadd btn btn-success btn-sm w-50">ADD</button><br><span class="discounted-price priceSellingDivclass">₹342</span></div></div></div></div></div><br></div>
+            </div>
+        </div>
+        <!--====================  End of products area  ====================-->
+         <footer>
+            <!-- <div class="footer" style="position: fixed; left: 0; bottom: 0; width: 100%; background-color: #4CAF50; color: #FFF; text-align: center;">
+  <p>POWERED‌ ‌By‌ ‌-‌ ‌NearbyGrocer‌ ‌Technologies‌ ‌Pvt‌ ‌Ltd‌</p>
+</div> -->            <div class="footer-nav-wrapper">
+                <div id="overlayfooter">
+                    <div class="cv-spinner footerspin">
+                        <span class="spinner"></span>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    
+    <!-- JS
+    ============================================ -->
+    <!-- Modernizer JS -->
+    <script src="assets/js/modernizr-2.8.3.min.js"></script>
+   
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+    <!-- IonRanger JS -->
+    <script src="assets/js/ion.rangeSlider.min.js"></script>
+    <!-- SVG inject JS -->
+    <script src="assets/js/svg-inject.min.js"></script>
+    <!-- Slick slider JS -->
+    <script src="assets/js/slick.min.js"></script>
+    <!-- Plugins JS (Please remove the comment from below plugins.min.js for better website load performance and remove plugin js files from avobe) -->
+    <!--
+  <script src="https://m.nearbygrocer.com/assets/js/plugins/plugins.min.js"></script>
+-->
+    <!-- Main JS -->
+    <script src="assets/js/main.js"></script>
+    <script type="text/javascript">
+        
+		function  gotoSeach(){
+            var BASE_URL = "https://m.nearbygrocer.com/";
+            
+            $.ajax({
+                    type: "POST",
+                    data:{"searchkeyword":""},
+                    dataType: 'json',
+                    url: BASE_URL + "/welcome/searchsession",
+                    success: function(data){ 
+                        window.location.href="https://m.nearbygrocer.com/search";
+                    }
+            });
+        }
+        
+        function gotoCartPage() {
+			var cartcount=$(".cartCount").data("cartcount");
+            if(cartcount=="0") {
+                window.location.href="https://m.nearbygrocer.com/emptypage";
+            } else {
+                window.location.href="https://m.nearbygrocer.com/cart";
+            }
+        }
+        
+        function goBack(){
+            window.location.href="https://m.nearbygrocer.com/category";
+        }
+        function HtmlEncode(s)
+        {
+           var res=s.replace("+%26+","&");
+            return "'"+res+"'";
+        }
+    </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">	
+	</script>
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+          new google.translate.TranslateElement({pageLanguage: 'en'}, 'google_translate_element');
+        }
+    </script>
+</body>
+
+
+</html>
